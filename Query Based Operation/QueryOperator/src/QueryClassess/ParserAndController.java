@@ -4,17 +4,16 @@
  * and open the template in the editor.
  */
 package QueryClassess;
+import java.util.*;
 
 /**
  *
  * @author elixir
  */
+
 public class ParserAndController {
     
     
-    public void operationcontroller()
-    {
-        
-    }
+    public Map<String,Integer> colnames=new HashMap<>();
     
 }

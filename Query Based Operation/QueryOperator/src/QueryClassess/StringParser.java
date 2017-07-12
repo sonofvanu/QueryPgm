@@ -12,7 +12,7 @@ public class StringParser {
     boolean astrexist,whereexist,sortexist,groupexist,selectexist,fieldexist,byexists,orderexists,orderbyexists,sortbyexists,groupbyexists,sumexists,countexists;
     int queryarrlength,afterorder,aftersort,aftergroup,querylength,csvfound;
     
-    CustomObjetc c=new CustomObjetc();
+    CustomObject c=new CustomObject();
     
     public void strarray()
     {
@@ -80,17 +80,9 @@ public void getcsvparams()
     }
     }
     
-    public void whereparser()
-    {
-        if(whereexist)
-        {
-            
-        }
 
-              
-    }
     
-    public boolean queryvalidator()
+    public boolean queryvalidator(String query)
     {
         if(query.contains("select")&& query.contains("from")||query.contains("*")||query.contains("where")||query.contains("group by")||query.contains("sort by")||query.contains("order by"))
         {
@@ -102,5 +94,17 @@ public void getcsvparams()
         
     }
    
+    public void Queryexecutor(String query)
+    {
+        if(queryvalidator(query))
+        {
+         CustomObject custobj=new CustomObject();
+         custobj.parametersetter(query);
+        }
+        else
+        {
+        System.out.println("Improper query format");    
+        }
+    }
     
 }

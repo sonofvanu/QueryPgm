@@ -9,11 +9,11 @@ import java.util.*;
 
 public class StringInput {
 
-    
+    static StringParser s1=new StringParser();
     
     public static void main(String[] args) 
     {
-        StringParser s1=new StringParser();
+        
         s1.strarray();
         s1.getcsvparams();
         s1.booleancheck();
@@ -33,6 +33,7 @@ public class StringInput {
         Scanner s=new Scanner(System.in);
         System.out.println("Kindly insert the query: ");
         inpquery=s.nextLine();
+        s1.Queryexecutor(inpquery);
         return inpquery;
         }
 }
