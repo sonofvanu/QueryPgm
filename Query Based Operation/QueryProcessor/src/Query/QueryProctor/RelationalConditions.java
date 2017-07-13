@@ -1,5 +1,8 @@
 package Query.QueryProctor;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class RelationalConditions {
 
 	private String column, value, operator;
@@ -27,4 +30,6 @@ public class RelationalConditions {
 	public void setOperator(String operator) {
 		this.operator = operator;
 	}
+	
+	List<RelationalConditions> list=new LinkedList<>();
 }

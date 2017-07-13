@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import Query.QueryProctor.QueryParser;
+import Query.QueryProctor.RelationalConditions;
 
 public class QueruProcessingTester {
 
@@ -12,21 +13,28 @@ public class QueruProcessingTester {
 	String query2="select * from employee.csv where empid<12";
 	String query3="select * from employee.csv where empsalary<18000 order by empdept";
 	QueryParser queryparser = new QueryParser();
+	private RelationalConditions relationalcondition = new RelationalConditions();
+	
 	
 	@Test
 	public void querinsertiontest() {
 		
-		queryparser.inputQuerryArray();
 		System.out.println("im in");
-		fail("oh no");
+		for(String printer:queryparser.inputQuerryArray())
+		{
+			System.out.println(printer);
+		}
 	}
 	
 	@Test
-	public void queryeligibility()
+	public void queryeligibilitychecker()
 	{
-		queryparser.eligibleQuery(query1);
-		System.out.println("query eliibility checked");
-		fail("oh no1");
+		queryparser.eligibleQuery(query2);
+		System.out.println(relationalcondition.getColumn());
+		System.out.println(relationalcondition.getOperator());
+		System.out.println(relationalcondition.getValue());
+		
 	}
+	
 
 }

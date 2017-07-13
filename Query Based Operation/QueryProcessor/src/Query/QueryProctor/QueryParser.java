@@ -3,34 +3,25 @@ package Query.QueryProctor;
 public class QueryParser {
 
 	public String filepath, queryfields, querycondition;
-	private String orderbycol, groupbycol, selectcol;
+	public String orderbycol, groupbycol, selectcol;
 	QueryInput queryinput = new QueryInput();
 	public String query = queryinput.queryGetter();
 	private RelationalConditions relationalcondition = new RelationalConditions();
 	private boolean hasgroupby, hasorderby, haswhere, hasAllColumn;
 	private ColumnName columnames = new ColumnName();
-
+	public String basequery = null, conditionqry = null;
+	
 	public String[] inputQuerryArray() {
 
 		String[] querryarray = query.split(" ");
-		if (eligibleQuery(query)) {
-
-			for (String traverse : querryarray) {
-				if (traverse.contains(".csv")) {
-					filepath = traverse;
-				}
-			}
-
-		}
-
 		return querryarray;
 	}
 
 	public boolean eligibleQuery(String query) {
 		if (query.contains("select") && query.contains("from") && query.contains("*") || query.contains("where")
 				|| query.contains("group by") || query.contains("order by") || query.contains("sort by")) {
-			System.out.println("Entered a correct query...");
-			String basequery = null, conditionqry = null;
+			//System.out.println("Entered a valid query...");
+			
 
 			if (query.contains("order by")) {
 				basequery = query.split("order by")[0].trim();
@@ -69,24 +60,16 @@ public class QueryParser {
 				haswhere = true;
 			} else {
 				basequery = query.split("from")[0].trim();
-				filepath = basequery.split("from")[1].trim();
+				//filepath = basequery.split("from")[1].trim();
 				selectcol = basequery.split("select")[1].trim();
 				this.fieldsProcessing(selectcol);
 			}
 
-			System.out.println("basequery-->" + basequery);
-			System.out.println("orderbycol-->" + orderbycol);
-			System.out.println("groupbycol-->" + groupbycol);
-			System.out.println("conditionqry-->" + conditionqry);
-			System.out.println("filepath-->" + filepath);
-
-			System.out.println("relational condition precessor-->" + relationalcondition.getColumn());
-			System.out.println("relational condition processor--> " + relationalcondition.getOperator());
-			System.out.println("relational condition value-->" + relationalcondition.getValue());
+			
 
 			return true;
 		} else {
-			System.out.println("Entered an in-correct query...");
+			System.out.println("Entered an in-valid query...");
 			return false;
 		}
 
@@ -117,6 +100,7 @@ public class QueryParser {
 				relationalcondition.setColumn(relationalquery.split(operator)[0].trim());
 				relationalcondition.setValue(relationalquery.split(operator)[1].trim());
 				relationalcondition.setOperator(operator);
+				
 				break;
 			}
 		}
