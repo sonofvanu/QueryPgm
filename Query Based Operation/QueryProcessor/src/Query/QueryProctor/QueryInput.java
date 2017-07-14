@@ -7,6 +7,7 @@ public class QueryInput {
 
 		QueryParser queryparser = new QueryParser();
 		queryparser.inputQuerryArray();
+
 	}
 
 	public String queryGetter() {

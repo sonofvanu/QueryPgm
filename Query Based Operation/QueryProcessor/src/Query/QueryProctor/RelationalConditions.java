@@ -30,6 +30,6 @@ public class RelationalConditions {
 	public void setOperator(String operator) {
 		this.operator = operator;
 	}
-	
-	List<RelationalConditions> list=new LinkedList<>();
+
+	List<RelationalConditions> list = new LinkedList<>();
 }
