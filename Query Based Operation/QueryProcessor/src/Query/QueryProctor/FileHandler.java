@@ -20,6 +20,9 @@ public class FileHandler {
 	Map<String, Integer> headermap = new HashMap<>();
 	Map<Integer, String> rowdatamap = new TreeMap<>();
 
+	////// ---Fetching of data from the csv file and trying to put the row data
+	////// in an array----///
+
 	public String[] fetchingRowData(String filename) throws Exception {
 		String str;
 		FileReader f = new FileReader("g:\\" + queryparser.filepath);
@@ -51,6 +54,8 @@ public class FileHandler {
 		this.columnorder = columnorder;
 	}
 
+	///// ----storing the splitted first header into a map of header name and
+	///// indexpoint----////
 	public Map<String, Integer> gettingHeaderMap() {
 		headerdata = finaldata[0].split(",");
 
@@ -62,6 +67,9 @@ public class FileHandler {
 		return headermap;
 	}
 
+	////// ----storing the splitted data i.e., each row into a map with their
+	////// row number----/////
+
 	public Map<Integer, String> gettingRowDataMap() {
 
 		int length = finaldata.length;
@@ -72,6 +80,7 @@ public class FileHandler {
 		return rowdatamap;
 	}
 
+	//// ---Separated column names in the select query---//////
 	public String[] columnSeparator() {
 		String[] separateddata = query.split(" ");
 		columnsreceived = separateddata[1].trim();
@@ -80,6 +89,7 @@ public class FileHandler {
 
 	}
 
+	///// ---- displaying of all the column based data----////
 	public FileHandler checkingHeaderInColumn(String query) {
 
 		String[] separateddata = query.split(" ");
@@ -119,6 +129,7 @@ public class FileHandler {
 		return this;
 	}
 
+	//// -------------column where conditioning---//////////////
 	public Map<Integer, String> ColumnDataProcessor(String[] columns, Map<Integer, String> rowdata,
 			Map<String, Integer> header) {
 		Map<Integer, String> newMap = new HashMap<>();
@@ -153,11 +164,13 @@ public class FileHandler {
 			}
 
 		}
-
+System.out.println(newMap);
 		return newMap;
 
 	}
 
+	////// ---where condition based displaying of data only for =
+	////// operator----/////
 	public Map<Integer, String> columnsAndWhereCondition(QueryParser queryparser, Map<String, Integer> header) {
 		Map<Integer, String> rowwsiedata = new HashMap<>();
 		try {
@@ -177,56 +190,55 @@ public class FileHandler {
 		} catch (Exception e) {
 
 		}
+		System.out.println(rowwsiedata);
 		return rowwsiedata;
 	}
 
+	////// ---where condition based displaying of data only for =
+	////// operator----/////
 	public Map<Integer, String> whereConditionProcessing(QueryParser queryparser, Map<String, Integer> header) {
 		Map<Integer, String> rowwisedata = new HashMap<>();
-	try{
-		BufferedReader bufferedreader=new BufferedReader(new FileReader(queryparser.filepath));
-		String conditioncolmnname=queryparser.relationalExpressionProcessing(queryparser.relationalquery).get(0).getColumn();
-		String conditionvalue=queryparser.relationalExpressionProcessing(queryparser.relationalquery).get(0).getValue();
-		int indexpoint=0,helper=0;
-		int columncount=queryparser.getColumnnamelist().size();
-		String string=bufferedreader.readLine();
-		if(queryparser.getColumnnamelist().get(0).equals("*"))
-		{
-			while(string!=null)
-			{
-				String afterdatasplit[]=str.split(",");
-				if(afterdatasplit[header.get(conditioncolmnname)].equals(conditionvalue)){
-					rowwisedata.put(indexpoint, string);
-					helper++;
-				}indexpoint++;
-				string=bufferedreader.readLine();
-			}
-			return rowwisedata;
-		}
-		else{
-			while(string!=null)
-			{
-				String afterdatasplit[]=string.split(",");
-				if(afterdatasplit[header.get(conditioncolmnname)].equals(conditionvalue))
-				{
-					StringBuffer stringbuffer=new StringBuffer();
-					for(helper=0;helper<columncount;helper++)
-					{
-						stringbuffer.append(afterdatasplit[header.get(queryparser.getColumnnamelist().get(helper))]);
-						rowwisedata.put(indexpoint,stringbuffer.toString());
+		try {
+			BufferedReader bufferedreader = new BufferedReader(new FileReader(queryparser.filepath));
+			String conditioncolmnname = queryparser.relationalExpressionProcessing(queryparser.relationalquery).get(0)
+					.getColumn();
+			String conditionvalue = queryparser.relationalExpressionProcessing(queryparser.relationalquery).get(0)
+					.getValue();
+			int indexpoint = 0, helper = 0;
+			int columncount = queryparser.getColumnnamelist().size();
+			String string = bufferedreader.readLine();
+			if (queryparser.getColumnnamelist().get(0).equals("*")) {
+				while (string != null) {
+					String afterdatasplit[] = str.split(",");
+					if (afterdatasplit[header.get(conditioncolmnname)].equals(conditionvalue)) {
+						rowwisedata.put(indexpoint, string);
+						helper++;
 					}
+					indexpoint++;
+					string = bufferedreader.readLine();
 				}
-				indexpoint++;
-				string=bufferedreader.readLine();
+				System.out.println(rowwisedata);
+				return rowwisedata;
+			} else {
+				while (string != null) {
+					String afterdatasplit[] = string.split(",");
+					if (afterdatasplit[header.get(conditioncolmnname)].equals(conditionvalue)) {
+						StringBuffer stringbuffer = new StringBuffer();
+						for (helper = 0; helper < columncount; helper++) {
+							stringbuffer
+									.append(afterdatasplit[header.get(queryparser.getColumnnamelist().get(helper))]);
+							rowwisedata.put(indexpoint, stringbuffer.toString());
+						}
+					}
+					indexpoint++;
+					string = bufferedreader.readLine();
+				}
 			}
-		}
-	
-	}
-	catch(Exception e)
-	{
-	}
-			return rowwisedata;
-		}
-	
-	}
-	
 
+		} catch (Exception e) {
+		}
+		System.out.println(rowwisedata);
+		return rowwisedata;
+	}
+
+}
