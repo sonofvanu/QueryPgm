@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -15,17 +16,23 @@ public class FileHandler {
 
 	QueryParser queryparser = new QueryParser();
 	String alldata[], str, finaldata[], withoutheader[], conditions[], hdr, headerdata[], columnorder, columnsreceived,
-			columns[], query;
+			columns[], query, relationalquery;
+	public String filename;
 	private ColumnNames columnamess = new ColumnNames();
 	Map<String, Integer> headermap = new HashMap<>();
 	Map<Integer, String> rowdatamap = new TreeMap<>();
-
+	List<RelationalConditions> relationalList = new ArrayList<>();
 	////// ---Fetching of data from the csv file and trying to put the row data
 	////// in an array----///
 
-	public String[] fetchingRowData(String filename) throws Exception {
+	public String[] fetchingRowData(String filename, String query, String relationalquery, List relationallist)
+			throws Exception {
+		this.filename = filename;
+		this.query = query;
+		this.relationalquery = relationalquery;
+		this.relationalList = relationallist;
 		String str;
-		FileReader f = new FileReader("g:\\" + queryparser.filepath);
+		FileReader f = new FileReader("g:\\" + filename);
 		BufferedReader br = new BufferedReader(f);
 		List<String> list = new ArrayList<String>();
 		while ((str = br.readLine()) != null) {
@@ -39,7 +46,7 @@ public class FileHandler {
 		this.gettingHeaderMap();
 		this.gettingRowDataMap();
 		this.columnSeparator();
-		this.checkingHeaderInColumn(queryparser.query);
+		this.checkingHeaderInColumn(query);
 		this.ColumnDataProcessor(columns, rowdatamap, headermap);
 		this.columnsAndWhereCondition(queryparser, headermap);
 		this.whereConditionProcessing(queryparser, headermap);
@@ -140,31 +147,43 @@ public class FileHandler {
 			this.checkingHeaderInColumn(query);
 		} else {
 
+			int definedlength = headerdata.length;
+
 			for (int i = 0; i < lengthcount; i++) {
-				indexofhead[i] = i;
+				for (int j = 0; j < definedlength; j++) {
+					if (headerdata[j].contains(columns[i])) {
+						indexofhead[i] = j;
+
+					}
+				}
+
 			}
+
 			for (String in : rowdata.values()) {
 				databeforeparsing.add(in);
 			}
 
+			for (Integer i : indexofhead) {
+				System.out.println(i);
+			}
 			int rowdatalength = databeforeparsing.size();
 
 			String storedata[] = new String[rowdatalength];
 
-			for (int j = 0; j < rowdatalength; j++) {
-				storedata[j] = databeforeparsing.get(j);
-				String datasftersplit[] = storedata[j].split(",");
+			for (int r = 0; r < rowdatalength; r++) {
+				storedata[r] = databeforeparsing.get(r);
+				String datasftersplit[] = storedata[r].split(",");
 
 				StringBuffer stringbuffer = null;
 				stringbuffer = new StringBuffer();
 				for (int k = 0; k < lengthcount; k++) {
 					stringbuffer.append(datasftersplit[indexofhead[k]] + ",");
 				}
-				newMap.put(j, stringbuffer.toString());
+				newMap.put(r, stringbuffer.toString());
 			}
 
 		}
-System.out.println(newMap);
+//		SYSTEM.OUT.PRINTLN("AM I" + NEWMAP);
 		return newMap;
 
 	}
@@ -174,7 +193,7 @@ System.out.println(newMap);
 	public Map<Integer, String> columnsAndWhereCondition(QueryParser queryparser, Map<String, Integer> header) {
 		Map<Integer, String> rowwsiedata = new HashMap<>();
 		try {
-			BufferedReader bufferedreader = new BufferedReader(new FileReader(queryparser.filepath));
+			BufferedReader bufferedreader = new BufferedReader(new FileReader("g:\\" + filename));
 			int indexpoint = 0, columncounter = queryparser.getColumnnamelist().size();
 			String stringreader = bufferedreader.readLine();
 			while (stringreader != null) {
@@ -190,7 +209,7 @@ System.out.println(newMap);
 		} catch (Exception e) {
 
 		}
-		System.out.println(rowwsiedata);
+		System.out.println("im a bad boy" + rowwsiedata);
 		return rowwsiedata;
 	}
 
@@ -199,7 +218,7 @@ System.out.println(newMap);
 	public Map<Integer, String> whereConditionProcessing(QueryParser queryparser, Map<String, Integer> header) {
 		Map<Integer, String> rowwisedata = new HashMap<>();
 		try {
-			BufferedReader bufferedreader = new BufferedReader(new FileReader(queryparser.filepath));
+			BufferedReader bufferedreader = new BufferedReader(new FileReader("g:\\" + filename));
 			String conditioncolmnname = queryparser.relationalExpressionProcessing(queryparser.relationalquery).get(0)
 					.getColumn();
 			String conditionvalue = queryparser.relationalExpressionProcessing(queryparser.relationalquery).get(0)
