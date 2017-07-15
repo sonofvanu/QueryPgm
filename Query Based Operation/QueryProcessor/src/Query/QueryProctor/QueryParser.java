@@ -1,13 +1,28 @@
 package Query.QueryProctor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class QueryParser {
 
-	public static String filepath, queryfields, querycondition, querryarray[];
+	public static String filepath, queryfields, querycondition, querryarray[],relationalquery;
 	public String orderbycol, groupbycol, column;
 	QueryInput queryinput = new QueryInput();
 	public String query = queryinput.queryGetter();
 	private RelationalConditions relationalcondition = new RelationalConditions();
-	private boolean hasgroupby, hasorderby, haswhere, hasAllColumn;
+	private List<RelationalConditions> relationalList;
+	private boolean hasgroupby, hasorderby, haswhere, hasAllColumn, hasnormal, hasAggregate;
+	private List<String> logicalOperator = new ArrayList<String>();
+	public List<String> columnnamelist=new ArrayList<>();
+	
+	public List<String> getColumnnamelist() {
+		return columnnamelist;
+	}
+
+	public void setColumnnamelist(List<String> columnnamelist) {
+		this.columnnamelist = columnnamelist;
+	}
+
 	public ColumnNames columnames = new ColumnNames();
 
 	public String selectcol;
@@ -25,6 +40,7 @@ public class QueryParser {
 		querryarray = query.split(" ");
 		this.eligibleQuery(query);
 		column = querryarray[1];
+		System.out.println(column);
 		return querryarray;
 	}
 
@@ -51,9 +67,13 @@ public class QueryParser {
 			int i = 0;
 			for (String column : columnlist) {
 				columnames.colnames.put(column, i);
+				this.columnnamelist.add(column);
 				i++;
 			}
 
+			if (selectcolumn.contains("sum") || selectcolumn.contains("count") || selectcolumn.contains("count(*)")) {
+				hasAggregate = true;
+			}
 			// System.out.println(columnames.colnames);
 
 		}
@@ -61,66 +81,52 @@ public class QueryParser {
 	}
 
 	public QueryParser fieldsSeparator(String query) {
-		String basequery = null, conditionqry = null;
+		String baseQuery = null, conditionQuery = null, selectcol = null;
 
 		if (query.contains("order by")) {
-			basequery = query.split("order by")[0].trim();
+			baseQuery = query.split("order by")[0].trim();
 			orderbycol = query.split("order by")[1].trim();
-			filepath = basequery.split("from")[1].trim();
-			basequery = basequery.split("from")[0].trim();
-			selectcol = basequery.split("select")[1].trim();
+			filepath = baseQuery.split("from")[1].trim();
+			baseQuery = baseQuery.split("from")[0].trim();
+			selectcol = baseQuery.split("select")[1].trim();
 			this.fieldsProcessing(selectcol);
 			hasorderby = true;
 		}
-
 		if (query.contains("group by")) {
-			basequery = query.split("group by")[0].trim();
+			baseQuery = query.split("group by")[0].trim();
 			groupbycol = query.split("group by")[1].trim();
-			if (query.contains("where")) {
-				conditionqry = basequery.split("where")[1].trim();
-				String relationalqry = conditionqry.split("and|or")[0].trim();
-				this.relationalExpressionProcessing(relationalqry);
-				basequery = basequery.split("where")[0].trim();
+			if (baseQuery.contains("where")) {
+				conditionQuery = baseQuery.split("where")[1].trim();
+				this.relationalExpressionProcessing(conditionQuery);
+				baseQuery = baseQuery.split("where")[0].trim();
 			}
-			filepath = basequery.split("from")[1].trim();
-			basequery = basequery.split("from")[0].trim();
-			selectcol = basequery.split("select")[1].trim();
+			filepath = baseQuery.split("from")[1].trim();
+			baseQuery = baseQuery.split("from")[0].trim();
+			selectcol = baseQuery.split("select")[1].trim();
 			this.fieldsProcessing(selectcol);
 			hasgroupby = true;
-		}
-
-		if (query.contains("where")) {
-			basequery = query.split("where")[0];
-			conditionqry = query.split("where")[1];
-			conditionqry = conditionqry.trim();
-			filepath = basequery.split("from")[1].trim();
-			String relationalqry = conditionqry.split("and|or")[0].trim();
-			this.relationalExpressionProcessing(relationalqry);
-			selectcol = basequery.split("select")[1].trim();
+		} else if (query.contains("where")) {
+			baseQuery = query.split("where")[0];
+			conditionQuery = query.split("where")[1];
+			conditionQuery = conditionQuery.trim();
+			filepath = baseQuery.split("from")[1].trim();
+			baseQuery = baseQuery.split("from")[0].trim();
+			this.relationalExpressionProcessing(conditionQuery);
+			selectcol = baseQuery.split("select")[1].trim();
 			this.fieldsProcessing(selectcol);
 			haswhere = true;
-		}
-
-		else {
-			basequery = query.split("from")[0].trim();
+		} else {
+			baseQuery = query.split("from")[0].trim();
 			filepath = query.split("from")[1].trim();
-			selectcol = basequery.split("select")[1].trim();
+			selectcol = baseQuery.split("select")[1].trim();
 			this.fieldsProcessing(selectcol);
-		}
-
-		FileHandler filehandler = new FileHandler();
-		try {
-			filehandler.fetchingRowData(filepath);
-			// filehandler.checkingHeaderInColumn(query);
-		} catch (Exception e) {
-
-			e.printStackTrace();
+			hasnormal = true;
 		}
 
 		return this;
 	}
 
-	public RelationalConditions relationalExpressionProcessing(String relationalquery) {
+	public List<RelationalConditions> relationalExpressionProcessing(String relationalquery) {
 		String oper[] = { ">=", "<=", "!=", ">", "<", "=" };
 
 		for (String operator : oper) {
@@ -128,11 +134,23 @@ public class QueryParser {
 				relationalcondition.setColumn(relationalquery.split(operator)[0].trim());
 				relationalcondition.setValue(relationalquery.split(operator)[1].trim());
 				relationalcondition.setOperator(operator);
-
+				relationalList.add(relationalcondition);
 				break;
 			}
 		}
-		return relationalcondition;
+		if (relationalList.size() > 1)
+			this.logicalOperatorFinder(relationalquery);
+		return relationalList;
+	}
+
+	private void logicalOperatorFinder(String relationalquery) {
+		String relationaldata[] = relationalquery.split(" ");
+
+		for (String data : relationaldata) {
+			if (data.trim().equals("and") || data.trim().equals("or")) {
+				logicalOperator.add(data);
+			}
+		}
 	}
 
 }

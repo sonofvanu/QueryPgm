@@ -16,7 +16,7 @@ public class FileHandler {
 	QueryParser queryparser = new QueryParser();
 	String alldata[], str, finaldata[], withoutheader[], conditions[], hdr, headerdata[], columnorder, columnsreceived,
 			columns[], query;
-	private ColumnNames columnames = new ColumnNames();
+	private ColumnNames columnamess = new ColumnNames();
 	Map<String, Integer> headermap = new HashMap<>();
 	Map<Integer, String> rowdatamap = new TreeMap<>();
 
@@ -38,6 +38,8 @@ public class FileHandler {
 		this.columnSeparator();
 		this.checkingHeaderInColumn(queryparser.query);
 		this.ColumnDataProcessor(columns, rowdatamap, headermap);
+		this.columnsAndWhereCondition(queryparser, headermap);
+		this.whereConditionProcessing(queryparser, headermap);
 		return finaldata;
 	}
 
@@ -84,7 +86,7 @@ public class FileHandler {
 		columnsreceived = separateddata[1].trim();
 		columns = columnsreceived.split(",");
 		int position;
-		if (columns.length == 1 || columnsreceived.contains("*")) {
+		if (columns.length == 1 || columns.equals("*")) {
 
 			for (String string : finaldata) {
 				System.out.println(string.replace("\"", "").replace(",", " "));
@@ -122,7 +124,6 @@ public class FileHandler {
 		Map<Integer, String> newMap = new HashMap<>();
 		int lengthcount = columns.length;
 		List<String> databeforeparsing = new ArrayList<>();
-		List<String> dataafterparsing = new ArrayList<>();
 		int indexofhead[] = new int[lengthcount];
 		if (columns[0].contains("*")) {
 			this.checkingHeaderInColumn(query);
@@ -157,4 +158,75 @@ public class FileHandler {
 
 	}
 
-}
+	public Map<Integer, String> columnsAndWhereCondition(QueryParser queryparser, Map<String, Integer> header) {
+		Map<Integer, String> rowwsiedata = new HashMap<>();
+		try {
+			BufferedReader bufferedreader = new BufferedReader(new FileReader(queryparser.filepath));
+			int indexpoint = 0, columncounter = queryparser.getColumnnamelist().size();
+			String stringreader = bufferedreader.readLine();
+			while (stringreader != null) {
+				String[] splittedstring = stringreader.split(",");
+				StringBuffer stringbuffer = new StringBuffer();
+				for (int i = 0; i < columncounter; i++) {
+					stringbuffer.append(splittedstring[header.get(queryparser.getColumnnamelist().get(i))] + ",");
+					rowwsiedata.put(indexpoint, stringbuffer.toString());
+				}
+				indexpoint++;
+				stringreader = bufferedreader.readLine();
+			}
+		} catch (Exception e) {
+
+		}
+		return rowwsiedata;
+	}
+
+	public Map<Integer, String> whereConditionProcessing(QueryParser queryparser, Map<String, Integer> header) {
+		Map<Integer, String> rowwisedata = new HashMap<>();
+	try{
+		BufferedReader bufferedreader=new BufferedReader(new FileReader(queryparser.filepath));
+		String conditioncolmnname=queryparser.relationalExpressionProcessing(queryparser.relationalquery).get(0).getColumn();
+		String conditionvalue=queryparser.relationalExpressionProcessing(queryparser.relationalquery).get(0).getValue();
+		int indexpoint=0,helper=0;
+		int columncount=queryparser.getColumnnamelist().size();
+		String string=bufferedreader.readLine();
+		if(queryparser.getColumnnamelist().get(0).equals("*"))
+		{
+			while(string!=null)
+			{
+				String afterdatasplit[]=str.split(",");
+				if(afterdatasplit[header.get(conditioncolmnname)].equals(conditionvalue)){
+					rowwisedata.put(indexpoint, string);
+					helper++;
+				}indexpoint++;
+				string=bufferedreader.readLine();
+			}
+			return rowwisedata;
+		}
+		else{
+			while(string!=null)
+			{
+				String afterdatasplit[]=string.split(",");
+				if(afterdatasplit[header.get(conditioncolmnname)].equals(conditionvalue))
+				{
+					StringBuffer stringbuffer=new StringBuffer();
+					for(helper=0;helper<columncount;helper++)
+					{
+						stringbuffer.append(afterdatasplit[header.get(queryparser.getColumnnamelist().get(helper))]);
+						rowwisedata.put(indexpoint,stringbuffer.toString());
+					}
+				}
+				indexpoint++;
+				string=bufferedreader.readLine();
+			}
+		}
+	
+	}
+	catch(Exception e)
+	{
+	}
+			return rowwisedata;
+		}
+	
+	}
+	
+

@@ -2,131 +2,165 @@ package Query.TestCase;
 
 import static org.junit.Assert.*;
 
-import java.util.Map;
-
+import org.hamcrest.Matcher;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import Query.QueryProctor.FileHandler;
+import java.util.*;
 import Query.QueryProctor.QueryParser;
 import Query.QueryProctor.RelationalConditions;
 
 public class QueryProcessingTester {
 
-	String query2 = "select * from employee.csv where empid<12";
+	String query2 = "select * from employee.csv where empid<12", query3 = "select * from employee.csv where empid&12";
 
 	QueryParser queryparser = new QueryParser();
-	FileHandler filehandler=new FileHandler();
-	// private RelationalConditions relationalcondition = new
-	// RelationalConditions();
+	FileHandler filehandler = new FileHandler();
 
-	@Test
+	@Test(expected=NullPointerException.class)
 	public void queryInsertionTest() {
-
-		System.out.println("im in");
-		// String[] expectedarray={};
-		assertNotNull(queryparser.inputQuerryArray());
-		for (String printer : queryparser.inputQuerryArray()) {
-			System.out.println(printer);
+		System.out.println("Test case 1 a started");
+		
+		for(String string:queryparser.inputQuerryArray())
+		{
+			System.out.println(string);
 		}
-		// assertArrayEquals(expectedarray, queryparser.inputQuerryArray());
-
-	}
-
-	// @Test
-	// public void queryInsertionTestNegative() {
-	//
-	// System.out.println("im in");
-	// assertEquals("This is a failure case", >0,
-	// queryparser.inputQuerryArray().length);
-	// for (String string : queryparser.inputQuerryArray()) {
-	// System.out.println(string);
-	// }
-	// System.out.println("Test case 1 completed");
-	// }
-
-	@SuppressWarnings("unused")
-	private void assertFalse(QueryParser queryParser2) {
+		assertNotNull(queryparser.inputQuerryArray().length);
 
 	}
 
 	@Test
 	public void queryEligibilityChecker() {
-		System.out.println("Im in on");
+		System.out.println("Test case 2 a started");
 		queryparser.eligibleQuery("select * from employee.csv");
-		assertTrue(queryparser.eligibleQuery("select * from employee.csv"));
-		System.out.println(queryparser.eligibleQuery("select * from employee.csv"));
-		System.out.println("Test case 2 completed");
-
-	}
-
-	@BeforeClass
-	public static void welcome() {
-		System.out.println("starting testing");
-	}
-
-	// @Before
-	// public void nextCase() {
-	// System.out.println("Output of the Case:");
-	// }
-
-	@Test
-	public void fieldsProcessing() {
-		assertNotNull(queryparser.fieldsProcessing("empid,empname"));
-		System.out.println(queryparser.fieldsProcessing("empid,empname").columnames.colnames);
-		System.out.println("Test case 3 completed");
-	}
-
-	@Test
-	public void relationalFieldProcessing() {
-
-		assertNotNull(queryparser.relationalExpressionProcessing("empid<12"));
-		System.out.println("Column Name: " + queryparser.relationalExpressionProcessing("empid<12").getColumn());
-		System.out.println(
-				"Relational Operator: " + queryparser.relationalExpressionProcessing("empid<12").getOperator());
-		System.out.println("Value: " + queryparser.relationalExpressionProcessing("empid<12").getValue());
-		System.out.println("Test case 4 Completed");
-
-	}
-
-	@Test
-	public void fieldsSeparator() {
-		assertFalse(queryparser.fieldsSeparator(query2));
-		System.out.println("Column Name: " + queryparser.fieldsSeparator(query2).column);
-		System.out.println("Group by Col Name: " + queryparser.fieldsSeparator(query2).groupbycol);
-		System.out.println("Order by Col Name: " + queryparser.fieldsSeparator(query2).orderbycol);
-		System.out.println("Selected Col Name: " + queryparser.fieldsSeparator(query2).selectcol);
-		System.out.println("Filepath: " + queryparser.fieldsSeparator(query2).filepath);
-		System.out.println("Query Condition: " + queryparser.fieldsSeparator(query2).querycondition);
-		System.out.println("Query Fields: " + queryparser.fieldsSeparator(query2).queryfields);
-		System.out.println("Test case 5 completed");
-
-	}
-	
-	@Test
-	public void headerMap()
-	{
-		assertNotNull(filehandler.checkingHeaderInColumn(query2));
-		System.out.println(filehandler.checkingHeaderInColumn(query2));
-	}
-	
-	@Test
-	public void rowDataMap()
-	{
-		assertNotNull(filehandler.gettingRowDataMap());
-		System.out.println(filehandler.gettingRowDataMap());
-	}
-	
-	public void columnDataProcessor()
-	{
-	assertNotnull(filehandler.ColumnDataProcessor(filehandler.columnSeparator(), filehandler.gettingRowDataMap(), filehandler.gettingHeaderMap()));
-	System.out.println(filehandler.ColumnDataProcessor(filehandler.columnSeparator(), filehandler.gettingRowDataMap(), filehandler.gettingHeaderMap()));
-	}
-
-	private void assertNotnull(Map<Integer, String> columnDataProcessor) {
-		// TODO Auto-generated method stub
 		
+		System.out.println(queryparser.eligibleQuery("select * from employee.csv"));
+		assertTrue("im true", queryparser.eligibleQuery("select * from employee.csv"));
+		System.out.println("Test case 2 a completed");
+
+	}
+//
+	@Test(expected = Exception.class)
+	public void queryEligibilityCheckerNegative() {
+		System.out.println("Test case 2 b started");
+		queryparser.eligibleQuery("select from employee.csv");
+		assertFalse("im false", queryparser.eligibleQuery("select from employee.csv"));
+		System.out.println("Test case 2 b completed");
+
+	}
+//select * from employee.csv
+
+
+	@Test(expected = Exception.class)
+	public void relationalFieldProcessing() {
+		System.out.println("Test case 4 a started");
+		
+		System.out.println(queryparser.relationalExpressionProcessing("empid<12"));
+		assertNull("im not null", queryparser.relationalExpressionProcessing("empid<12"));
+		System.out.println("Test case 4 a Completed");
 	}
 
+	@Test(expected = Exception.class)
+	public void relationalFieldProcessingNegative() {
+		System.out.println("Test case 4 b started");
+		assertNotNull("im null", queryparser.relationalExpressionProcessing("empid&12"));
+		System.out.println("Test case 4 b Completed");
+
+	}
+
+	@Test(expected = Exception.class)
+	public void fieldsSeparator() {
+		System.out.println("Test case 5 a started");
+		
+		System.out.println("Column Name: " + queryparser.fieldsSeparator(query2).column);
+		System.out.println("Group by Col Name: " + queryparser.fieldsSeparator(query2).groupbycol
+				+ "Order by Col Name: " + queryparser.fieldsSeparator(query2).orderbycol);
+		assertNull("im not null", queryparser.fieldsSeparator(query2));
+		System.out.println("Test case 5 a completed");
+
+	}
+
+	@Test(expected = Exception.class)
+	public void fieldsSeparatorNegative() {
+		System.out.println("Test case 5 b started");
+		assertNull("im null", queryparser.fieldsSeparator(query3));
+
+		System.out.println("Test case 5 b completed");
+
+	}
+//
+	@Test(expected = Exception.class)
+	public void headerMap() {
+		System.out.println("Test case 6 a started");
+		
+		System.out.println(filehandler.checkingHeaderInColumn(query2).toString());
+		assertNotNull("im not null", filehandler.checkingHeaderInColumn(query2));
+		System.out.println("Test case 6 a completed");
+	}
+//
+	@Test(expected = Exception.class)
+	public void headerMapNegative() {
+		System.out.println("Test case 6 b started");
+		
+		System.out.println(filehandler.checkingHeaderInColumn(query3).toString());
+		assertNull("im null", filehandler.checkingHeaderInColumn(query3));
+		System.out.println("Test case 6 b completed");
+	}
+//
+	@Test(expected = Exception.class)
+	public void rowDataMap() {
+		System.out.println("Test case 7 a started");
+		
+		System.out.println(filehandler.gettingRowDataMap().toString());
+		assertNotNull("im not null", filehandler.gettingRowDataMap());
+		System.out.println("Test case 7 a completed");
+	}
+
+	@Test(expected = Exception.class)
+	public void rowDataMapNegative() {
+		System.out.println("Test case 7 b started");
+		
+		System.out.println(filehandler.gettingRowDataMap().toString());
+		assertNull("im null", filehandler.gettingRowDataMap());
+		System.out.println("Test case 7 b completed");
+	}
+//
+	@Test(expected = Exception.class)
+	public void columnDataProcessor() {
+		System.out.println("Test case 8 a started");
+		
+		System.out.println(filehandler.ColumnDataProcessor(filehandler.columnSeparator(),
+				filehandler.gettingRowDataMap(), filehandler.gettingHeaderMap()).toString());
+		assertNotNull("im not null", filehandler.ColumnDataProcessor(filehandler.columnSeparator(),
+				filehandler.gettingRowDataMap(), filehandler.gettingHeaderMap()));
+
+		System.out.println("Test case 8 a completed");
+	}
+
+	@Test(expected = Exception.class)
+	public void columnDataProcessorNegative() {
+		System.out.println("Test case 8 b started");
+		System.out.println(filehandler.ColumnDataProcessor(filehandler.columnSeparator(),
+				filehandler.gettingRowDataMap(), filehandler.gettingHeaderMap()));
+		assertNull("im null", filehandler.ColumnDataProcessor(filehandler.columnSeparator(),
+				filehandler.gettingRowDataMap(), filehandler.gettingHeaderMap()));
+		System.out.println("Test case 8 b completed");
+	}
+
+	
+	
+	@Test
+	public void fieldsProcessor() {
+		System.out.println("Test case 3 a started");
+		Map<String,Integer> expectedMap = new HashMap<>();
+		expectedMap.put("empid",0);
+		expectedMap.put("empname", 1);
+		System.out.println(queryparser.fieldsProcessing("empid,empname").columnames.colnames.toString());
+		assertNotNull(queryparser.fieldsProcessing("empid,empname").columnames.colnames.get("empid"));
+		
+		System.out.println("Test case 3 a completed");
+	}
 }
