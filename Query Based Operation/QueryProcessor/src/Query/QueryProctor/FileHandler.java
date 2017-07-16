@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -20,7 +21,10 @@ public class FileHandler {
 			columnsreceived, columns[], query, relationalquery;
 	public String filename;
 	private ColumnNames columnamess = new ColumnNames();
+	public Map<Integer, String> singlewheremap = new HashMap();
 	public Map<String, Integer> headermap = new HashMap<>();
+	public Map<Integer, String> resultantmap = new HashMap<>();
+	public Map<Integer, String> middlemap = new HashMap<>();
 	public Map<Integer, String> rowdatamap = new TreeMap<>();
 	public List<RelationalConditions> relationalList = new ArrayList<>();
 	////// ---Fetching of data from the csv file and trying to put the row data
@@ -50,6 +54,7 @@ public class FileHandler {
 		this.checkingHeaderInColumn(query);
 		this.ColumnDataProcessor(columns, rowdatamap, headermap);
 		this.whereQueryProcessing(queryparser, headermap);
+		this.multiWhereProcessor(queryparser, headermap);
 		return finaldata;
 	}
 
@@ -105,9 +110,6 @@ public class FileHandler {
 		int position;
 		if (columns.length == 1 || columns.equals("*")) {
 
-			for (String string : finaldata) {
-				System.out.println(string.replace("\"", "").replace(",", " "));
-			}
 		} else {
 			Set entrySet = headermap.entrySet();
 
@@ -123,8 +125,6 @@ public class FileHandler {
 
 						for (int s = 0; s < finaldata.length; s++) {
 							String[] temp = finaldata[s].split(",");
-							// System.out.println(temp[position].replaceAll("^\"|\"$",
-							// ""));
 
 						}
 
@@ -184,7 +184,6 @@ public class FileHandler {
 			}
 
 		}
-		// SYSTEM.OUT.PRINTLN("AM I" + NEWMAP);
 		return newMap;
 
 	}
@@ -387,6 +386,210 @@ public class FileHandler {
 		}
 
 		return rowwisedata;
+	}
+
+	public Map<Integer, String> multiWhereProcessor(QueryParser queryparser, Map<String, Integer> headermap) {
+		Map<Integer, String> rowdata = new HashMap<>();
+		BufferedReader reader = null;
+		String columnname = "", values = "", operator = "", columnname1 = "", values1 = "", operator1 = "";
+		String colname = "";
+		String valu = "";
+		int index = 0, h = 0;
+		int indexcount = 0, columncount = 0, temp = 0, headerposition = 0;
+		int definedlength = headerdata.length;
+		int colcount = 0;
+		String str = "";
+		try {
+			Iterator iterator = relationalList.iterator();
+			while (iterator.hasNext()) {
+				RelationalConditions rc = (RelationalConditions) iterator.next();
+				columnname = rc.getColumn();
+				values = rc.getValue();
+				operator = rc.getOperator();
+				RelationalConditions rc1 = (RelationalConditions) iterator.next();
+				columnname1 = rc1.getColumn();
+				values1 = rc1.getValue();
+				operator1 = rc1.getOperator();
+
+				for (int count = 0; count < definedlength; count++) {
+					String hdr = headerdata[count].replaceAll("^\"|\"$", "");
+					// System.out.println(columns[count]);
+					if (hdr.contains(columnname)) {
+
+						headerposition = count;
+						System.out.println(headerposition);
+					}
+				}
+
+			}
+			reader = new BufferedReader(new FileReader("g:\\" + filename));
+
+			colcount = columns.length;
+			str = reader.readLine();
+			str = reader.readLine();
+			if (columns[0].equals("*")) {
+
+				while (str != null) {
+					if (operator.equals("=")) {
+						String aftersplit[] = str.split(",");
+						if (aftersplit[headerposition].equals(valu)) {
+							rowdata.put(index, str);
+							h++;
+
+						}
+						index++;
+						str = reader.readLine();
+					}
+				}
+
+				return rowdata;
+			} else {
+				while (str != null) {
+					String op1 = operator;
+					String op2 = operator1;
+					// out switch op1
+					switch (op1) {
+					case "=":
+						switch (op2) {// op1 case1 inner case op2
+						case "=":// op2 case 1 start
+							if (queryparser.logicalOperator.get(0).equals("and")) {
+								String aftersplit[] = str.split(",");
+								if (aftersplit[headermap.get(columnname)].equals(values)
+										&& aftersplit[headermap.get(columnname1)].equals(values1)) {
+									rowdata.put(index, str);
+									h++;
+
+								}
+								index++;
+								str = reader.readLine();
+							} else {
+
+							}
+
+							break;
+						case ">":
+							if (queryparser.logicalOperator.get(0).equals("and")) {
+								String aftersplit[] = str.split(",");
+								if (aftersplit[headermap.get(columnname)].equals(values)
+										&& (aftersplit[headermap.get(columnname1)].compareTo(values1)) > 0) {
+
+									StringBuffer sb = new StringBuffer();
+									for (h = 0; h < colcount; h++) {
+										sb.append(aftersplit[headermap.get(columns[h])] + ",");
+										String st = sb.toString();
+										rowdata.put(index, st.substring(0, st.length() - 1));
+									}
+									h++;
+
+								}
+								index++;
+								str = reader.readLine();
+							} else {
+
+							}
+							break;
+						case "<":
+							break;
+						case ">=":
+							break;
+						case "<+":
+							break;
+						case "!=":
+							break;
+						}
+						break;// op2 case 1 end
+					case ">":
+						break;
+					case "<":
+						break;
+					case ">=":// op1 case 4 start
+						switch (op2) {
+						case "=":
+							if (queryparser.logicalOperator.get(0).equals("and")) {
+								String aftersplit[] = str.split(",");
+								if (aftersplit[headermap.get(columnname)].equals(values)
+										&& aftersplit[headermap.get(columnname1)].equals(values1)) {
+									rowdata.put(index, str);
+									h++;
+
+								}
+								index++;
+								str = reader.readLine();
+							} else {
+
+							}
+
+							break;
+						case ">":
+							if (queryparser.logicalOperator.get(0).equals("and")) {
+								String aftersplit[] = str.split(",");
+								if (aftersplit[headermap.get(columnname)].equals(values)
+										&& (aftersplit[headermap.get(columnname1)].compareTo(values1)) > 0) {
+
+									StringBuffer sb = new StringBuffer();
+									for (h = 0; h < colcount; h++) {
+										sb.append(aftersplit[headermap.get(columns[h])] + ",");
+										String st = sb.toString();
+										rowdata.put(index, st.substring(0, st.length() - 1));
+									}
+									h++;
+
+								}
+								index++;
+								str = reader.readLine();
+							} else {
+
+							}
+							break;
+						case "<":
+							break;
+						case ">=":
+							break;
+						case "<=":
+							if (queryparser.logicalOperator.get(0).equals("and")) {
+								String aftersplit[] = str.split(",");
+								String left1 = aftersplit[headermap.get(columnname)];
+								String left2 = aftersplit[headermap.get(columnname1)];
+								String valu1 = values;
+								String valu2 = values1;
+								int res1 = left1.compareTo(valu1);
+								int res2 = left2.compareTo(valu2);
+								if ((res1 > 0 || res1 == 0) && (res2 < 0 || res2 == 0)) {
+
+									StringBuffer sb = new StringBuffer();
+									for (h = 0; h < colcount; h++) {
+										sb.append(aftersplit[headermap.get(columns[h])] + ",");
+										String st = sb.toString();
+										rowdata.put(index, st.substring(0, st.length() - 1));
+									}
+									h++;
+
+								}
+								index++;
+								str = reader.readLine();
+							} else {
+
+							}
+
+							break;
+						case "!=":
+							break;
+						}
+						break;
+					case "<+":
+						break;
+					case "!=":
+						break;
+
+					}
+
+				}
+			}
+
+		} catch (IOException e) {
+		}
+		System.out.println("after where processor" + rowdata);
+		return rowdata;
 	}
 
 }

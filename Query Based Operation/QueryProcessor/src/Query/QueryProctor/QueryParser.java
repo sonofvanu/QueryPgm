@@ -9,11 +9,11 @@ public class QueryParser {
 	public String relationalquery;
 	public String orderbycol, groupbycol, column;
 	QueryInput queryinput = new QueryInput();
-	public String query;// = queryinput.queryGetter();
+	public String query;
 
 	public List<RelationalConditions> relationalList = new ArrayList<>();
 	private boolean hasgroupby, hasorderby, haswhere, hasAllColumn, hasnormal, hasAggregate;
-	private List<String> logicalOperator = new ArrayList<String>();
+	public List<String> logicalOperator = new ArrayList<String>();
 	public List<String> columnnamelist = new ArrayList<>();
 
 	public List<String> getColumnnamelist() {
@@ -40,15 +40,12 @@ public class QueryParser {
 		this.query = query;
 		querryarray = query.split(" ");
 		this.eligibleQuery(query);
-		// column = querryarray[1];
-		// System.out.println(column);
 		return querryarray;
 	}
 
 	public boolean eligibleQuery(String query) {
 		if ((query.contains("select") && query.contains("from")) || ((query.contains("*") || query.contains("where")
 				|| query.contains("group by") || query.contains("order by") || query.contains("sort by")))) {
-			System.out.println("this is a valid query");
 			this.fieldsSeparator(query);
 			return true;
 		} else {
@@ -75,7 +72,7 @@ public class QueryParser {
 			if (selectcolumn.contains("sum") || selectcolumn.contains("count") || selectcolumn.contains("count(*)")) {
 				hasAggregate = true;
 			}
-			// System.out.println(columnames.colnames);
+
 
 		}
 		return this;
@@ -129,22 +126,6 @@ public class QueryParser {
 			this.fieldsProcessing(selectcol);
 			hasAllColumn = true;
 		}
-		System.out.println("im separating fields");
-		// System.out.println("the base query is " + baseQuery);
-		System.out.println("the file path is " + filepath);
-		if (hasorderby)
-			System.out.println("the order by col is " + orderbycol);
-		System.out.println("the selct by col is " + selectcol);
-		if (hasgroupby)
-			System.out.println("the group by is " + groupbycol);
-		System.out.println("the relational query is " + relationalquery);
-		System.out.println("completed separating fileds");
-		Iterator i = relationalList.iterator();
-		
-		while (i.hasNext()) {
-			RelationalConditions rc = (RelationalConditions) i.next();
-			System.out.println(rc.getColumn() + "  -------  " + rc.getOperator() + "  --------  " + rc.getValue());
-		}
 
 		FileHandler filehandler = new FileHandler();
 		try {
@@ -158,7 +139,6 @@ public class QueryParser {
 
 	public List<RelationalConditions> relationalExpressionProcessing(String relationalquery) {
 		String oper[] = { ">=", "<=", "!=", ">", "<", "=" };
-		System.out.println("the obtained relational query is " + relationalquery);
 		String[] relationalquerylist = relationalquery.split("and|or");
 
 		for (String relquery : relationalquerylist) {
@@ -189,10 +169,7 @@ public class QueryParser {
 				logicalOperator.add(data);
 			}
 		}
-		Iterator i = logicalOperator.iterator();
-		while (i.hasNext()) {
-			System.out.println(i.next());
-		}
+		
 	}
 
 }
