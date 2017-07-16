@@ -2,6 +2,7 @@ package Query.QueryProctor;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,13 +16,13 @@ import java.util.TreeMap;
 public class FileHandler {
 
 	QueryParser queryparser = new QueryParser();
-	String alldata[], str, finaldata[], withoutheader[], conditions[], hdr, headerdata[], columnorder, columnsreceived,
-			columns[], query, relationalquery;
+	public String alldata[], str, finaldata[], withoutheader[], conditions[], hdr, headerdata[], columnorder,
+			columnsreceived, columns[], query, relationalquery;
 	public String filename;
 	private ColumnNames columnamess = new ColumnNames();
-	Map<String, Integer> headermap = new HashMap<>();
-	Map<Integer, String> rowdatamap = new TreeMap<>();
-	List<RelationalConditions> relationalList = new ArrayList<>();
+	public Map<String, Integer> headermap = new HashMap<>();
+	public Map<Integer, String> rowdatamap = new TreeMap<>();
+	public List<RelationalConditions> relationalList = new ArrayList<>();
 	////// ---Fetching of data from the csv file and trying to put the row data
 	////// in an array----///
 
@@ -48,8 +49,7 @@ public class FileHandler {
 		this.columnSeparator();
 		this.checkingHeaderInColumn(query);
 		this.ColumnDataProcessor(columns, rowdatamap, headermap);
-		this.columnsAndWhereCondition(queryparser, headermap);
-		this.whereConditionProcessing(queryparser, headermap);
+		this.whereQueryProcessing(queryparser, headermap);
 		return finaldata;
 	}
 
@@ -68,7 +68,7 @@ public class FileHandler {
 
 		int length = headerdata.length;
 		for (int i = 0; i < length; i++) {
-			headermap.put(headerdata[i], i);
+			headermap.put(headerdata[i].replaceAll("^\"|\"$", ""), i);
 		}
 
 		return headermap;
@@ -123,7 +123,8 @@ public class FileHandler {
 
 						for (int s = 0; s < finaldata.length; s++) {
 							String[] temp = finaldata[s].split(",");
-							System.out.println(temp[position].replaceAll("^\"|\"$", ""));
+							// System.out.println(temp[position].replaceAll("^\"|\"$",
+							// ""));
 
 						}
 
@@ -183,80 +184,208 @@ public class FileHandler {
 			}
 
 		}
-//		SYSTEM.OUT.PRINTLN("AM I" + NEWMAP);
+		// SYSTEM.OUT.PRINTLN("AM I" + NEWMAP);
 		return newMap;
 
 	}
 
-	////// ---where condition based displaying of data only for =
-	////// operator----/////
-	public Map<Integer, String> columnsAndWhereCondition(QueryParser queryparser, Map<String, Integer> header) {
-		Map<Integer, String> rowwsiedata = new HashMap<>();
-		try {
-			BufferedReader bufferedreader = new BufferedReader(new FileReader("g:\\" + filename));
-			int indexpoint = 0, columncounter = queryparser.getColumnnamelist().size();
-			String stringreader = bufferedreader.readLine();
-			while (stringreader != null) {
-				String[] splittedstring = stringreader.split(",");
-				StringBuffer stringbuffer = new StringBuffer();
-				for (int i = 0; i < columncounter; i++) {
-					stringbuffer.append(splittedstring[header.get(queryparser.getColumnnamelist().get(i))] + ",");
-					rowwsiedata.put(indexpoint, stringbuffer.toString());
-				}
-				indexpoint++;
-				stringreader = bufferedreader.readLine();
-			}
-		} catch (Exception e) {
-
-		}
-		System.out.println("im a bad boy" + rowwsiedata);
-		return rowwsiedata;
-	}
-
-	////// ---where condition based displaying of data only for =
-	////// operator----/////
-	public Map<Integer, String> whereConditionProcessing(QueryParser queryparser, Map<String, Integer> header) {
+	public Map<Integer, String> whereQueryProcessing(QueryParser queryparser, Map<String, Integer> header)
+			throws IOException {
 		Map<Integer, String> rowwisedata = new HashMap<>();
+
+		BufferedReader bufferedreader = null;
+		String columnname = "", values = "", operator = "";
+		int lengthcount = columns.length;
+		int[] indexofhead = new int[lengthcount];
+		int indexcount = 0, columncount = 0, temp = 0, headerposition = 0;
+		String string = "";
+		int definedlength = headerdata.length;
 		try {
-			BufferedReader bufferedreader = new BufferedReader(new FileReader("g:\\" + filename));
-			String conditioncolmnname = queryparser.relationalExpressionProcessing(queryparser.relationalquery).get(0)
-					.getColumn();
-			String conditionvalue = queryparser.relationalExpressionProcessing(queryparser.relationalquery).get(0)
-					.getValue();
-			int indexpoint = 0, helper = 0;
-			int columncount = queryparser.getColumnnamelist().size();
-			String string = bufferedreader.readLine();
-			if (queryparser.getColumnnamelist().get(0).equals("*")) {
-				while (string != null) {
-					String afterdatasplit[] = str.split(",");
-					if (afterdatasplit[header.get(conditioncolmnname)].equals(conditionvalue)) {
-						rowwisedata.put(indexpoint, string);
-						helper++;
+			Iterator iterator = relationalList.iterator();
+			while (iterator.hasNext()) {
+				RelationalConditions rc = (RelationalConditions) iterator.next();
+				columnname = rc.getColumn();
+
+				for (int count = 0; count < definedlength; count++) {
+					String hdr = headerdata[count].replaceAll("^\"|\"$", "");
+					// System.out.println(columns[count]);
+					if (hdr.contains(columnname)) {
+
+						headerposition = count;
+						System.out.println(headerposition);
 					}
-					indexpoint++;
-					string = bufferedreader.readLine();
+				}
+				values = rc.getValue();
+				operator = rc.getOperator();
+			}
+			bufferedreader = new BufferedReader(new FileReader("g:\\" + filename));
+			System.out.println(columnname);
+			System.out.println(headerposition);
+			System.out.println(values);
+			columncount = columns.length;
+			string = bufferedreader.readLine();
+			string = bufferedreader.readLine();
+			for (int i = 0; i < lengthcount; i++) {
+				for (int j = 0; j < definedlength; j++) {
+					if (headerdata[j].contains(columns[i])) {
+						indexofhead[i] = j;
+
+					}
+				}
+
+			}
+			if (columns[0].equals("*")) {
+				while (string != null) {
+					if (operator.equals("="))// queryparser.relationalList.get(0).getValue().equals("="))
+					{
+						String[] afterdatasplit = string.split(",");
+
+						if (afterdatasplit[headerposition].equals(values)) {
+							rowwisedata.put(indexcount, string);
+							temp++;
+						}
+						indexcount++;
+						string = bufferedreader.readLine();
+					}
 				}
 				System.out.println(rowwisedata);
 				return rowwisedata;
 			} else {
 				while (string != null) {
 					String afterdatasplit[] = string.split(",");
-					if (afterdatasplit[header.get(conditioncolmnname)].equals(conditionvalue)) {
-						StringBuffer stringbuffer = new StringBuffer();
-						for (helper = 0; helper < columncount; helper++) {
-							stringbuffer
-									.append(afterdatasplit[header.get(queryparser.getColumnnamelist().get(helper))]);
-							rowwisedata.put(indexpoint, stringbuffer.toString());
+					for (int i = 0; i < lengthcount; i++) {
+						for (int j = 0; j < definedlength; j++) {
+							if (headerdata[j].contains(columns[i])) {
+								indexofhead[i] = j;
+
+							}
 						}
+
 					}
-					indexpoint++;
-					string = bufferedreader.readLine();
+					if (operator.equals("=")) {
+						long residence = Math.max(
+								Long.parseLong(afterdatasplit[headerposition].replaceAll("^\"|\"$", "")),
+								Long.parseLong(values));
+						if (Long.parseLong(afterdatasplit[headerposition].replaceAll("^\"|\"$", "")) == Long
+								.parseLong(values)) {
+							StringBuffer stringbuffer = new StringBuffer();
+
+							for (int k = 0; k < lengthcount; k++) {
+								for (temp = 0; temp < columncount - 1; temp++) {
+									stringbuffer.append(afterdatasplit[indexofhead[k]] + ",");
+									String stringg = stringbuffer.toString();
+
+									rowwisedata.put(indexcount, stringg.substring(0, stringg.length() - 1));
+
+								}
+
+							}
+
+						}
+						indexcount++;
+						string = bufferedreader.readLine();
+					}
+
+					else if (operator.equals(">")) {
+						long residence = Math.max(
+								Long.parseLong(afterdatasplit[headerposition].replaceAll("^\"|\"$", "")),
+								Long.parseLong(values));
+						if (Long.parseLong(
+								afterdatasplit[headerposition].replaceAll("^\"|\"$", "")) > (Long.parseLong(values))) {
+							StringBuffer stringbuffer = new StringBuffer();
+
+							for (int k = 0; k < lengthcount; k++) {
+								for (temp = 0; temp < columncount - 1; temp++) {
+									stringbuffer.append(afterdatasplit[indexofhead[k]] + ",");
+									String stringg = stringbuffer.toString();
+
+									rowwisedata.put(indexcount, stringg.substring(0, stringg.length() - 1));
+
+								}
+
+							}
+
+						}
+						indexcount++;
+						string = bufferedreader.readLine();
+
+					}
+
+					else if (operator.equals(">=")) {
+						long residence = Math.max(
+								Long.parseLong(afterdatasplit[headerposition].replaceAll("^\"|\"$", "")),
+								Long.parseLong(values));
+						if (Long.parseLong(
+								afterdatasplit[headerposition].replaceAll("^\"|\"$", "")) >= (Long.parseLong(values))) {
+							StringBuffer stringbuffer = new StringBuffer();
+
+							for (int k = 0; k < lengthcount; k++) {
+								for (temp = 0; temp < columncount - 1; temp++) {
+									stringbuffer.append(afterdatasplit[indexofhead[k]] + ",");
+									String stringg = stringbuffer.toString();
+
+									rowwisedata.put(indexcount, stringg.substring(0, stringg.length() - 1));
+
+								}
+
+							}
+
+						}
+						indexcount++;
+						string = bufferedreader.readLine();
+					} else if (operator.equals("<")) {
+						long residence = Math.max(
+								Long.parseLong(afterdatasplit[headerposition].replaceAll("^\"|\"$", "")),
+								Long.parseLong(values));
+						if (Long.parseLong(
+								afterdatasplit[headerposition].replaceAll("^\"|\"$", "")) < (Long.parseLong(values))) {
+							StringBuffer stringbuffer = new StringBuffer();
+
+							for (int k = 0; k < lengthcount; k++) {
+								for (temp = 0; temp < columncount - 1; temp++) {
+									stringbuffer.append(afterdatasplit[indexofhead[k]] + ",");
+									String stringg = stringbuffer.toString();
+
+									rowwisedata.put(indexcount, stringg.substring(0, stringg.length() - 1));
+
+								}
+
+							}
+
+						}
+						indexcount++;
+						string = bufferedreader.readLine();
+					} else if (operator.equals("<=")) {
+						long residence = Math.max(
+								Long.parseLong(afterdatasplit[headerposition].replaceAll("^\"|\"$", "")),
+								Long.parseLong(values));
+						if (Long.parseLong(
+								afterdatasplit[headerposition].replaceAll("^\"|\"$", "")) <= (Long.parseLong(values))) {
+							StringBuffer stringbuffer = new StringBuffer();
+
+							for (int k = 0; k < lengthcount; k++) {
+								for (temp = 0; temp < columncount - 1; temp++) {
+									stringbuffer.append(afterdatasplit[indexofhead[k]] + ",");
+									String stringg = stringbuffer.toString();
+
+									rowwisedata.put(indexcount, stringg.substring(0, stringg.length() - 1));
+
+								}
+
+							}
+
+						}
+						indexcount++;
+						string = bufferedreader.readLine();
+					}
+
 				}
 			}
 
 		} catch (Exception e) {
+			// redirect them to string columns;
 		}
-		System.out.println(rowwisedata);
+
 		return rowwisedata;
 	}
 
