@@ -380,6 +380,30 @@ public class FileHandler {
 						indexcount++;
 						string = bufferedreader.readLine();
 					}
+					else if (operator.equals("!=")) {
+						long residence = Math.max(
+								Long.parseLong(afterdatasplit[headerposition].replaceAll("^\"|\"$", "")),
+								Long.parseLong(values));
+						if (Long.parseLong(
+								afterdatasplit[headerposition].replaceAll("^\"|\"$", "")) != (Long.parseLong(values))) {
+							StringBuffer stringbuffer = new StringBuffer();
+
+							for (int k = 0; k < lengthcount; k++) {
+								for (temp = 0; temp < columncount - 1; temp++) {
+									stringbuffer.append(afterdatasplit[indexofhead[k]] + ",");
+									String stringg = stringbuffer.toString();
+
+									rowwisedata.put(indexcount, stringg.substring(0, stringg.length() - 1));
+
+								}
+
+							}
+
+						}
+						indexcount++;
+						string = bufferedreader.readLine();
+					}
+					
 
 				}
 			}
@@ -433,7 +457,7 @@ public class FileHandler {
 			// redirect them to string columns;
 		}
 		
-System.out.println(rowwisedata);
+//System.out.println(rowwisedata);
 
 		return rowwisedata;
 	}
