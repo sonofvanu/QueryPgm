@@ -1,41 +1,47 @@
 package com.niit.queryprogression;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 public class FileHandler {
-	QuerySplitter querySplitter = new QuerySplitter();
-	QueryProgression queryProgression = new QueryProgression();
-	BufferedReader bufferedReader;
+	QueryParsingUnit queryParse = new QueryParsingUnit();
+	QueryExecutor processor = new QueryExecutor();
+	BufferedReader reader;
 
 	public Map<Integer, String> executeQuery(String query) {
 
-		QuerySplitter parsedQuery = querySplitter.validateThruRegex(query);
+		QueryParsingUnit parsedQuery = queryParse.validateThruRegex(query);
+		// storeHeaderOfCsv(parsedQuery.getPath());//header from csv
+		// getDataFromCsv(parsedQuery);//content from csv
 		if (parsedQuery.getType4() == 4) {
-			return queryProgression.groupByQueryProcessor(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
+			return processor.groupByQueryProcessor(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
 		}
 
 		if (parsedQuery.getType3() == 3) {
 			if (parsedQuery.getType2() == 2) {
-				return queryProgression.orderByWhereQueryProcessor(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
+				return processor.orderByWhereQueryProcessor(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
 			} else {
 				if (parsedQuery.getCondition().size() == 1) {
-					return queryProgression.getOrderByDataForAllRows(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
+					return processor.getOrderByDataForAllRows(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
 				} else {
-					return queryProgression.getOrderByForSpecifiedCols(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
+					return processor.getOrderByForSpecifiedCols(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
 				}
 			}
 		}
 		if (parsedQuery.getType2() == 2) {
 			if (parsedQuery.getCondition().get(0).equals("*"))
-				return queryProgression.whereQueryProcessor(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
+				return processor.whereQueryProcessor(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
 
 			else if (parsedQuery.isHasAggregate()) {
-				return queryProgression.aggregateWithWhere(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
+				return processor.aggregateWithWhere(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
 			} else {
-				return queryProgression.multiWhereProcessor(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
+				return processor.multiWhereProcessor(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
 			}
 		}
 		if (parsedQuery.getType1() == 1) {
@@ -43,15 +49,15 @@ public class FileHandler {
 				return getDataFromCsv(parsedQuery);
 			else if (parsedQuery.isHasAggregate()) {
 				Map<Integer,String> rowdata=new HashMap<>();
-				Map<Integer,Aggregators> r=queryProgression.aggregateQuery(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
+				Map<Integer,Aggregate> r=processor.aggregateQuery(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
 				int i=0;
-				for(Aggregators a:r.values()){
+				for(Aggregate a:r.values()){
 					rowdata.put(i,a.toString());
 					i++;
 				}
 				return rowdata;
 			} else {
-				return queryProgression.specifiedQueryProcessor(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
+				return processor.specifiedQueryProcessor(parsedQuery, storeHeaderOfCsv(parsedQuery.getPath()));
 			}
 
 		}
@@ -62,8 +68,8 @@ public class FileHandler {
 	private Map<String, Integer> storeHeaderOfCsv(String csvpath) {
 		Map<String, Integer> headerInMap = new HashMap<>();
 		try {
-			bufferedReader = new BufferedReader(new FileReader(csvpath));
-			String firstline = bufferedReader.readLine();
+			reader = new BufferedReader(new FileReader(csvpath));
+			String firstline = reader.readLine();
 			String headerarr[] = firstline.split(",");
 			int len = headerarr.length;
 			for (int i = 0; i < len; i++) {
@@ -77,17 +83,17 @@ public class FileHandler {
 		return headerInMap;
 	}
 
-	private Map<Integer, String> getDataFromCsv(QuerySplitter querySplitter) {
+	private Map<Integer, String> getDataFromCsv(QueryParsingUnit queryparse) {
 		Map<Integer, String> rowdata = new HashMap<>();
 		try {
-			bufferedReader = new BufferedReader(new FileReader(querySplitter.getPath()));
+			reader = new BufferedReader(new FileReader(queryparse.getPath()));
 
 			int index = 0;
-			String str = bufferedReader.readLine();
+			String str = reader.readLine();
 			while (str != null) {
 				rowdata.put(index, str);
 				index++;
-				str = bufferedReader.readLine();
+				str = reader.readLine();
 			}
 		}
 

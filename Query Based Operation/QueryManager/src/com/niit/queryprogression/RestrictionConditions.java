@@ -1,18 +1,11 @@
 package com.niit.queryprogression;
 
-public class Restrictions {
-	private String value;
+
+public class RestrictionConditions {
 	private String col_name;
 	private String operator;
-	
-	public String getValue() {
-		return value;
-	}
+	private String value;
 
-	public void setValue(String value) {
-		this.value = value;
-	}
-	
 	public String getCol_name() {
 		return col_name;
 	}
@@ -29,6 +22,12 @@ public class Restrictions {
 		this.operator = operator;
 	}
 
-	
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
 
 }

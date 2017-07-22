@@ -5,18 +5,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class QuerySplitter implements Cloneable {
+public class QueryParsingUnit {
 
-	private int type1, type2, type3, type4;
-	private String path, grp_clause, ord_clause;
-	private boolean hasAggregate;
 	private List<String> cols = new ArrayList<>();
-	private List<Restrictions> condition = new ArrayList<>();
+	private String path;
+	private boolean hasAggregate;
+	private List<RestrictionConditions> condition = new ArrayList<>();
 	private List<String> operators = new ArrayList<>();
+	private String grp_clause;
+	private String ord_clause;
+	private int type1, type2, type3, type4;
 
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+	
 
 	public boolean isHasAggregate() {
 		return hasAggregate;
@@ -82,11 +82,11 @@ public class QuerySplitter implements Cloneable {
 		this.path = path;
 	}
 
-	public List<Restrictions> getCondition() {
+	public List<RestrictionConditions> getCondition() {
 		return condition;
 	}
 
-	public void setCondition(List<Restrictions> condition) {
+	public void setCondition(List<RestrictionConditions> condition) {
 		this.condition = condition;
 	}
 
@@ -106,40 +106,52 @@ public class QuerySplitter implements Cloneable {
 		this.ord_clause = ord_clause;
 	}
 
-	public QuerySplitter validateThruRegex(String query) {
-		String queryStore = query;
+	private void checkaggregate() {
+
+		for (String col : cols) {
+			if (col.contains("sum") || col.contains("count") || col.contains("avg") || col.contains("min")
+					|| col.contains("max")) {
+				hasAggregate = true;
+			} else
+				hasAggregate = false;
+
+		}
+	}
+
+	public QueryParsingUnit validateThruRegex(String query) {
+		String queryHolder = query;
 		String splitQuery[];
 
 		Pattern pat1 = Pattern.compile("select\\s.*from\\s.*");
-		Matcher mat1 = pat1.matcher(queryStore);
+		Matcher mat1 = pat1.matcher(queryHolder);
 		if (mat1.find()) {
-			if (queryStore.contains("groupby")) {
+			if (queryHolder.contains("groupby")) {
 				type4 = 4;
-				splitQuery = queryStore.split("groupby");
+				splitQuery = queryHolder.split("groupby");
 				grp_clause = splitQuery[1].replaceAll("\\s", "");
-				queryStore = splitQuery[0];
+				queryHolder = splitQuery[0];
 
 			}
-			if (queryStore.contains("orderby")) {
+			if (queryHolder.contains("orderby")) {
 				type3 = 3;
-				splitQuery = queryStore.split("orderby");
+				splitQuery = queryHolder.split("orderby");
 				ord_clause = splitQuery[1].replaceAll("\\s", "");
-				queryStore = splitQuery[0];
+				queryHolder = splitQuery[0];
 
 			}
-			if (queryStore.contains("where")) {
+			if (queryHolder.contains("where")) {
 				List<String> operands = new ArrayList<>();
 				type2 = 2;
 				String wholeWhere = "";
-				splitQuery = queryStore.split("where");
+				splitQuery = queryHolder.split("where");
 				wholeWhere = splitQuery[1];
 
 				String holder = wholeWhere;
 				StringBuilder sb = new StringBuilder();
 				for (String s : holder.split(" ")) {
 
-					if (!s.equals("")) 
-						sb.append(s + " ");
+					if (!s.equals("")) // ignore space
+						sb.append(s + " "); // add word with 1 space
 
 				}
 				holder = sb.toString();
@@ -171,9 +183,9 @@ public class QuerySplitter implements Cloneable {
 				}
 
 				int len = operands.size();
-				Restrictions conditionObj[] = new Restrictions[len];
+				RestrictionConditions conditionObj[] = new RestrictionConditions[len];
 				for (int assign = 0; assign < len; assign++) {
-					conditionObj[assign] = new Restrictions();
+					conditionObj[assign] = new RestrictionConditions();
 					String conditionsplit[] = operands.get(assign).split("[\\s]*[>=|<=|!=|=|<|>][\\s]*");
 					int l = conditionsplit.length;
 
@@ -199,16 +211,16 @@ public class QuerySplitter implements Cloneable {
 					condition.add(conditionObj[assign]);
 
 				}
-				queryStore = splitQuery[0];
+				queryHolder = splitQuery[0];
 			}
-			if (queryStore.contains("from")) {
+			if (queryHolder.contains("from")) {
 				type1 = 1;
-				splitQuery = queryStore.split("from");
+				splitQuery = queryHolder.split("from");
 				path = "G:\\" + splitQuery[1].replaceAll("\\s", "");
-				queryStore = splitQuery[0];
+				queryHolder = splitQuery[0];
 			}
-			if (queryStore.contains("select")) {
-				splitQuery = queryStore.split("select");
+			if (queryHolder.contains("select")) {
+				splitQuery = queryHolder.split("select");
 				String columns = splitQuery[1].replaceAll("\\s", "");
 				if (!columns.equals("*")) {
 					String splitedColname[] = columns.trim().split(",");
@@ -220,7 +232,7 @@ public class QuerySplitter implements Cloneable {
 				} else {
 					cols.add("*");
 				}
-				queryStore = splitQuery[0];
+				queryHolder = splitQuery[0];
 			}
 
 		}
@@ -228,15 +240,4 @@ public class QuerySplitter implements Cloneable {
 		return this;
 	}
 
-	public void checkaggregate() {
-
-		for (String col : cols) {
-			if (col.contains("sum") || col.contains("count") || col.contains("avg") || col.contains("min")
-					|| col.contains("max")) {
-				hasAggregate = true;
-			} else
-				hasAggregate = false;
-
-		}
-	}
 }
