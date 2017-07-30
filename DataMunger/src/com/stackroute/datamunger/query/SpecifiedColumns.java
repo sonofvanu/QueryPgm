@@ -1,7 +1,7 @@
-package com.niit.queryoperation;
+package com.stackroute.datamunger.query;
 import java.util.*;
 
-public class Columisation
+public class SpecifiedColumns
 {
 	private List<String> columns =new ArrayList<String>();
 

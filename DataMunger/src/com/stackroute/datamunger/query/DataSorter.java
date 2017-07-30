@@ -1,11 +1,9 @@
-package com.niit.processor;
+package com.stackroute.datamunger.query;
 
 import java.util.Comparator;
 
-import com.niit.queryoperation.RowData;
 
-
-public class DataSorting implements Comparator<RowData> 
+public class DataSorter implements Comparator<RowDataHolder> 
 {
 	private int sortingIndex;
 	
@@ -20,7 +18,7 @@ public class DataSorting implements Comparator<RowData>
 	}
 
 	@Override
-	public int compare(RowData arg0, RowData arg1) 
+	public int compare(RowDataHolder arg0, RowDataHolder arg1) 
 	{
 		return arg0.get(sortingIndex).compareTo(arg1.get(sortingIndex));
 	}

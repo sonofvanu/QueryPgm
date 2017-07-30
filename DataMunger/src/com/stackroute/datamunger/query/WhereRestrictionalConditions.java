@@ -1,6 +1,11 @@
-package com.niit.model;
+package com.stackroute.datamunger.query;
 
-public class Restrictions {
+import java.util.*;
+
+//change class name
+public class WhereRestrictionalConditions 
+{
+	//change name to conditionColumn,conditionOperator,conditionValue
 	private String column,operator,value;
 	
 	public String getColumn() 
@@ -37,5 +42,5 @@ public class Restrictions {
 	{
 		return "Column:"+column+" Operator:"+operator+" Value:"+value;
 	}
-
+	
 }
