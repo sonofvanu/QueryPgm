@@ -18,11 +18,11 @@
 
 ## Operational OverView
 >Parsing the provided sql string query
-	>1.Detecting what type of query is it?
-	>2.Taking the filelocation from the query.
-	>3.Detecting the presence of specific columns
-	>4.Detecting the where conditions and split and store them
-	>5.Looking for the logical operators between two conditions in case of multiple where conditions
+	1. Detecting what type of query is it?
+	2. Taking the filelocation from the query.
+	3. Detecting the presence of specific columns
+	4. Detecting the where conditions and split and store them
+	5. Looking for the logical operators between two conditions in case of multiple where conditions
 
 >Retrieving the Header row i.e., the first row from the csv doc which contains the name of the fields
 
