@@ -18,6 +18,7 @@
 
 ## Operational OverView
 >Parsing the provided sql string query
+
 	1. Detecting what type of query is it?
 	2. Taking the filelocation from the query.
 	3. Detecting the presence of specific columns
