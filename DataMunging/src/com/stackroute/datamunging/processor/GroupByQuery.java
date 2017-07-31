@@ -8,12 +8,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import com.stackroute.datamunging.evaluator.DataSorter;
 import com.stackroute.datamunging.evaluator.QueryEvaluator;
 import com.stackroute.datamunging.model.DataCarrier;
 import com.stackroute.datamunging.model.HeaderRowData;
 import com.stackroute.datamunging.model.RowDataHolder;
-import com.stackroute.datamunging.parsing.DataSorter;
-
 import com.stackroute.datamunging.parsing.QueryParameter;
 
 public class GroupByQuery implements QueryExecutor {

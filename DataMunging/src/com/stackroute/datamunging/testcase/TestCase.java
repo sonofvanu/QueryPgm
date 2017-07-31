@@ -6,201 +6,193 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.stackroute.datamunging.model.DataCarrier;
 import com.stackroute.datamunging.model.RowDataHolder;
-import com.stackroute.datamunging.parsing.QueryEligibilityChecker;
+import com.stackroute.datamunging.parsing.Query;
+
 
 public class TestCase {
 
-	static QueryEligibilityChecker queryEligibilityChecker;
+	static Query query;
 
 	@BeforeClass
-	public static void objectMaintainer() {
-		queryEligibilityChecker = new QueryEligibilityChecker();
+	public static void startPoint() {
+		query = new Query();
 	}
 
 	@Test
-	public void selectAllWithoutWhereTestCase() throws Exception {
-		DataCarrier dataSet = queryEligibilityChecker.processorSelection("select * from E:/Emp.csv");
+	public void simpleQuery() throws Exception {
+		DataCarrier dataSet = query.processorSelection("select * from E:/Emp.csv");
 		assertNotNull(dataSet);
-		display("selectAllWithoutWhereTestCase", dataSet);
-
-	}
-
-	@Test
-	public void selectColumnsWithoutWhereTestCase() throws Exception {
-
-		DataCarrier dataSet = queryEligibilityChecker.processorSelection("select City,Name,Salary from E:/Emp.csv");
-		assertNotNull(dataSet);
-		display("selectColumnsWithoutWhereTestCase", dataSet);
+		display("simpleQuery-----1", dataSet);
 
 	}
 
 	@Test
-	public void withWhereGreaterThanTestCase() throws Exception {
+	public void simpleQueryWithSpecifiedColumnFields() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker
-				.processorSelection("select City,Name,Salary from E:/Emp.csv where salary>30000");
+		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv");
 		assertNotNull(dataSet);
-		display("withWhereGreaterThanTestCase", dataSet);
+		display("simpleQueryWithSpecifiedColumnFields-----2", dataSet);
 
 	}
 
 	@Test
-	public void withWhereLessThanTestCase() throws Exception {
+	public void specifiedColumnQueryWithGreaterThanClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker
-				.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary<35000");
+		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv where salary>30000");
 		assertNotNull(dataSet);
-		display("withWhereLessThanTestCase", dataSet);
+		display("specifiedColumnQueryWithGreaterThanClause-----3", dataSet);
 
 	}
 
 	@Test
-	public void withWhereLessThanOrEqualToTestCase() throws Exception {
+	public void specifiedColumnQueryWithLessThanClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker
-				.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary<=35000");
+		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary<35000");
 		assertNotNull(dataSet);
-		display("withWhereLessThanOrEqualToTestCase", dataSet);
+		display("specifiedColumnQueryWithLessThanClause-----4", dataSet);
 
 	}
 
 	@Test
-	public void withWhereGreaterThanOrEqualToTestCase() throws Exception {
+	public void specifiedColumnQueryWithLessThanOrEqualClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary>=35000");
+		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary<=35000");
 		assertNotNull(dataSet);
-		display("withWhereLessThanOrEqualToTestCase", dataSet);
+		display("specifiedColumnQueryWithLessThanOrEqualClause-----5", dataSet);
 
 	}
 
 	@Test
-	public void withWhereNotEqualToTestCase() throws Exception {
+	public void specifiedColumnQueryWithGreaterThanOrEqualClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary<=35000");
+		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary>=35000");
 		assertNotNull(dataSet);
-		display("withWhereNotEqualToTestCase", dataSet);
+		display("specifiedColumnQueryWithGreaterThanOrEqualClause-----6", dataSet);
 
 	}
 
 	@Test
-	public void withWhereEqualAndNotEqualTestCase() throws Exception {
+	public void specifiedColumnQueryWithNotEqualClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary>=30000 and Salary<=38000");
+		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary!=35000");
 		assertNotNull(dataSet);
-		display("withWhereEqualAndNotEqualTestCase", dataSet);
+		display("specifiedColumnQueryWithNotEqualClause-----7", dataSet);
 
 	}
 
 	@Test
-	public void selectCountColumnsWithoutWhereTestCase() throws Exception {
+	public void specifiedColumnQueryWithEqualAndNotEqualClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker.processorSelection("select count(Name) from E:/Emp.csv");
+		DataCarrier dataSet = query
+				.processorSelection("select City,Name,Salary from E:/Emp.csv where City=Bangalore and Salary!=38000");
 		assertNotNull(dataSet);
-		display("selectCountColumnsWithoutWhereTestCase", dataSet);
+		display("specifiedColumnQueryWithEqualAndNotEqualClause-----8", dataSet);
 
 	}
 
 	@Test
-	public void selectSumColumnsWithoutWhereTestCase() throws Exception {
+	public void aggregateFunctionCountClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker.processorSelection("select sum(Salary) from E:/Emp.csv");
+		DataCarrier dataSet = query.processorSelection("select count(Name) from E:/Emp.csv");
 		assertNotNull(dataSet);
-		display("selectSumColumnsWithoutWhereTestCase", dataSet);
+		display("aggregateFunctionCountClause-----9", dataSet);
 
 	}
 
 	@Test
-	public void selectSumColumnsWithWhereTestCase() throws Exception {
+	public void aggregateFunctionSumClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker.processorSelection("select sum(Salary) from E:/Emp.csv where City=Bangalore");
+		DataCarrier dataSet = query.processorSelection("select sum(Salary) from E:/Emp.csv");
 		assertNotNull(dataSet);
-		display("selectSumColumnsWithWhereTestCase", dataSet);
+		display("aggregateFunctionSumClause-----10", dataSet);
 
 	}
 
 	@Test
-	public void selectColumnsWithoutWhereWithOrderByTestCase() throws Exception {
+	public void aggregateFunctionSumClauseWithWhereEqualClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker.processorSelection("select City,Name,Salary from E:/Emp.csv order by Salary");
+		DataCarrier dataSet = query.processorSelection("select sum(Salary) from E:/Emp.csv where City=Bangalore");
 		assertNotNull(dataSet);
-		display("selectColumnsWithoutWhereWithOrderByTestCase", dataSet);
+		display("aggregateFunctionSumClauseWithWhereEqualClause-----11", dataSet);
 
 	}
 
 	@Test
-	public void selectColumnsWithWhereWithOrderByTestCase() throws Exception {
+	public void specifiedColumnsWithOrderByClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker.processorSelection("select City,Name,Salary from E:/Emp.csv where City=Bangalore order by Salary");
+		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv order by Salary");
 		assertNotNull(dataSet);
-		display("selectColumnsWith-WhereWithOrderByTestCase", dataSet);
+		display("specifiedColumnsWithOrderByClause-----12", dataSet);
 
 	}
 
 	@Test
-	public void selectColumnsWithoutWhereWithGroupByCountTestCase() throws Exception {
+	public void specifiedColumnsWithWhereAndOrderByClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker.processorSelection("select City,count(*) from E:/Emp.csv group by City");
+		DataCarrier dataSet = query
+				.processorSelection("select City,Name,Salary from E:/Emp.csv where City=Bangalore order by Salary");
 		assertNotNull(dataSet);
-		displayGroupByRecords("selectColumnsWithoutWhereWithOrderByTestCase", dataSet);
+		display("specifiedColumnsWithWhereAndOrderByClause-----13", dataSet);
 
 	}
 
 	@Test
-	public void selectColumnsWithoutWhereWithGroupBySumTestCase() throws Exception {
+	public void specifiedColumnAndAggregateCountAllWithGroupByClause() throws Exception {
 
-		DataCarrier dataSet = queryEligibilityChecker
-				.processorSelection("select City,sum(Salary) from E:/Emp.csv group by City");
+		DataCarrier dataSet = query.processorSelection("select City,count(*) from E:/Emp.csv group by City");
 		assertNotNull(dataSet);
-		displayGroupByRecords("selectColumnsWithoutWhereWithOrderByTestCase", dataSet);
+		displayGroupByRecords("specifiedColumnAndAggregateCountAllWithGroupByClause-----14", dataSet);
 
 	}
 
-	public void display(String str, DataCarrier dataSet) {
-		System.out.println();
-		System.out.println(str);
-		System.out.println();
+	@Test
+	public void specifiedColumnAndAggregateSumWithGroupByClause() throws Exception {
 
-		if (dataSet.getAggregateRow().isEmpty()) {
+		DataCarrier dataSet = query.processorSelection("select City,sum(Salary) from E:/Emp.csv group by City");
+		assertNotNull(dataSet);
+		displayGroupByRecords("specifiedColumnAndAggregateSumWithGroupByClause-----15", dataSet);
 
-			for (RowDataHolder rowData : dataSet.getResultSet()) {
+	}
+
+	public void display(String testCaseName, DataCarrier printerDataSet) {
+		System.out.println("===========================================" + "\n");
+		System.out.println(testCaseName);
+		if (printerDataSet.getAggregateRow().isEmpty()) {
+			for (RowDataHolder rowData : printerDataSet.getResultSet()) {
 				Set<Integer> rowIndex = rowData.keySet();
-
 				for (int index : rowIndex) {
 					System.out.print(rowData.get(index) + "\t");
 				}
-
 				System.out.println();
 			}
-
 		} else {
 			System.out.println();
-			Set<String> columnNames = dataSet.getAggregateRow().keySet();
+			Set<String> columnNames = printerDataSet.getAggregateRow().keySet();
 
 			for (String columnName : columnNames) {
 				System.out.print(columnName + "\t");
 			}
 			System.out.println();
 			for (String columnName : columnNames) {
-				System.out.print(dataSet.getAggregateRow().get(columnName) + "\t");
+				System.out.print(printerDataSet.getAggregateRow().get(columnName) + "\t");
 			}
 		}
+		System.out.println("===========================================");
 	}
 
-	public void displayGroupByRecords(String str, DataCarrier dataSet4) {
-		System.out.println();
-		System.out.println(str);
-		System.out.println();
-
-		LinkedHashMap<String, LinkedHashMap<String, Float>> groupRows = dataSet4.getTotalGroupedData();
-
+	public void displayGroupByRecords(String testCaseName, DataCarrier printerDataSet) {
+		System.out.println("===========================================");
+		System.out.println(testCaseName);
+		LinkedHashMap<String, LinkedHashMap<String, Float>> groupRows = printerDataSet.getTotalGroupedData();
 		Set<String> groupByColumnValues = groupRows.keySet();
-
 		for (String groupByColumnValue : groupByColumnValues) {
-			LinkedHashMap<String, Float> eachGroupRow = dataSet4.getTotalGroupedData().get(groupByColumnValue);
+			LinkedHashMap<String, Float> eachGroupRow = printerDataSet.getTotalGroupedData().get(groupByColumnValue);
 			System.out.print(groupByColumnValue + "\t");
 			Set<String> aggregateColumnNames = eachGroupRow.keySet();
 			for (String eachAggregateColumnName : aggregateColumnNames) {
@@ -209,7 +201,7 @@ public class TestCase {
 
 			System.out.println();
 		}
-
+		System.out.println("===========================================");
 	}
 
 }

@@ -17,11 +17,11 @@ public class QueryParser {
 		queryParameter.setColumNames(new SpecifiedColumns());
 		queryParameter.setListrelexpr(new ArrayList<WhereRestrictionalConditions>());
 		queryParameter.setLogicalOperator(new ArrayList<String>());
-		this.parseQuery(queryString);
+		this.querySegregator(queryString);
 		HeaderRowData headerRow = this.setHeaderRow();
 	}
 
-	public QueryParameter parseQuery(String queryString) {
+	public QueryParameter querySegregator(String queryString) {
 		String baseQuery = null, conditionQuery = null, selectcol = null;
 
 		if (queryString.contains("order by")) {
@@ -29,14 +29,14 @@ public class QueryParser {
 			queryParameter.setOrderByColumn(queryString.split("order by")[1].trim().toLowerCase());
 			if (baseQuery.contains("where")) {
 				conditionQuery = baseQuery.split("where")[1].trim();
-				this.relationalExpressionProcessing(conditionQuery);
+				this.relationalQueryFieldProcessor(conditionQuery);
 				baseQuery = baseQuery.split("where")[0].trim();
 				queryParameter.setHasWhere(true);
 			}
 			queryParameter.setFilePath(baseQuery.split("from")[1].trim());
 			baseQuery = baseQuery.split("from")[0].trim();
 			selectcol = baseQuery.split("select")[1].trim();
-			this.fieldsProcessing(selectcol);
+			this.fieldSeparation(selectcol);
 			queryParameter.setHasOrderBy(true);
 
 		} else if (queryString.contains("group by")) {
@@ -44,14 +44,14 @@ public class QueryParser {
 			queryParameter.setGroupByColumn(queryString.split("group by")[1].trim().toLowerCase());
 			if (baseQuery.contains("where")) {
 				conditionQuery = baseQuery.split("where")[1].trim();
-				this.relationalExpressionProcessing(conditionQuery);
+				this.relationalQueryFieldProcessor(conditionQuery);
 				baseQuery = baseQuery.split("where")[0].trim();
 				queryParameter.setHasWhere(true);
 			}
 			queryParameter.setFilePath(baseQuery.split("from")[1].trim());
 			baseQuery = baseQuery.split("from")[0].trim();
 			selectcol = baseQuery.split("select")[1].trim();
-			this.fieldsProcessing(selectcol);
+			this.fieldSeparation(selectcol);
 			queryParameter.setHasGroupBy(true);
 		} else if (queryString.contains("where")) {
 			baseQuery = queryString.split("where")[0];
@@ -59,16 +59,16 @@ public class QueryParser {
 			conditionQuery = conditionQuery.trim();
 			queryParameter.setFilePath(baseQuery.split("from")[1].trim());
 			baseQuery = baseQuery.split("from")[0].trim();
-			this.relationalExpressionProcessing(conditionQuery);
+			this.relationalQueryFieldProcessor(conditionQuery);
 			selectcol = baseQuery.split("select")[1].trim();
-			this.fieldsProcessing(selectcol);
+			this.fieldSeparation(selectcol);
 			queryParameter.setHasWhere(true);
 
 		} else {
 			baseQuery = queryString.split("from")[0].trim();
 			queryParameter.setFilePath(queryString.split("from")[1].trim());
 			selectcol = baseQuery.split("select")[1].trim();
-			this.fieldsProcessing(selectcol);
+			this.fieldSeparation(selectcol);
 			queryParameter.setHasSimpleQuery(true);
 
 		}
@@ -76,7 +76,7 @@ public class QueryParser {
 		return queryParameter;
 	}
 
-	private void relationalExpressionProcessing(String conditionQuery) {
+	private void relationalQueryFieldProcessor(String conditionQuery) {
 		String oper[] = { ">=", "<=", ">", "<", "!=", "=" };
 
 		String relationalQueries[] = conditionQuery.split("\\s+and\\s+|\\s+or\\s+");
@@ -97,10 +97,10 @@ public class QueryParser {
 
 		queryParameter.setRestrictions(queryParameter.restrictions);
 		if (queryParameter.restrictions.size() > 1)
-			this.logicalOperatorStore(conditionQuery);
+			this.logicalOperatorManager(conditionQuery);
 	}
 
-	private void logicalOperatorStore(String conditionQuery) {
+	private void logicalOperatorManager(String conditionQuery) {
 		String conditionQueryData[] = conditionQuery.split(" ");
 
 		for (String queryData : conditionQueryData) {
@@ -112,7 +112,7 @@ public class QueryParser {
 		queryParameter.setLogicalOperator(queryParameter.logicalOperator);
 	}
 
-	private void fieldsProcessing(String selectColumn) {
+	private void fieldSeparation(String selectColumn) {
 
 		if (selectColumn.trim().contains("*") && selectColumn.trim().length() == 1) {
 			queryParameter.setHasAllColumn(true);
