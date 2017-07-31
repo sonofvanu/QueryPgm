@@ -12,6 +12,7 @@ public class QueryParser {
 
 	QueryParameter queryParameter = new QueryParameter();
 
+	@SuppressWarnings("unused")
 	public QueryParser(String queryString) throws Exception {
 
 		queryParameter.setColumNames(new SpecifiedColumns());
@@ -145,6 +146,7 @@ public class QueryParser {
 		}
 		queryParameter.setHeaderRow(headerRow);
 
+		bufferedReader.close();
 		return headerRow;
 	}
 

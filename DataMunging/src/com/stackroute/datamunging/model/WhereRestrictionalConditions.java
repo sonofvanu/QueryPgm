@@ -1,7 +1,5 @@
 package com.stackroute.datamunging.model;
 
-import java.util.*;
-
 //change class name
 public class WhereRestrictionalConditions {
 	// change name to conditionColumn,conditionOperator,conditionValue

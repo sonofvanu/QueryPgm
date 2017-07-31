@@ -6,9 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 import com.stackroute.datamunging.model.DataCarrier;
 import com.stackroute.datamunging.model.RowDataHolder;

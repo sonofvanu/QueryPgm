@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.stackroute.datamunging.evaluator.DataSorter;
-import com.stackroute.datamunging.evaluator.QueryEvaluator;
+import com.stackroute.datamunging.evaluator.QueryTypeBasedOperation;
 import com.stackroute.datamunging.model.DataCarrier;
 import com.stackroute.datamunging.model.HeaderRowData;
 import com.stackroute.datamunging.model.RowDataHolder;
@@ -20,7 +20,7 @@ public class AggregateQuery implements QueryExecutor {
 	@Override
 	public DataCarrier executeQuery(QueryParameter queryParameter) throws Exception {
 		// TODO Auto-generated method stub
-		QueryEvaluator queryEvaluator = new QueryEvaluator();
+		QueryTypeBasedOperation queryEvaluator = new QueryTypeBasedOperation();
 		DataCarrier dataSet = new DataCarrier();
 		HeaderRowData headerRow = queryParameter.getHeaderRow();
 
@@ -110,6 +110,7 @@ public class AggregateQuery implements QueryExecutor {
 			}
 		}
 
+		bufferedReader.close();
 		return dataSet;
 	}
 
