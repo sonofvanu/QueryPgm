@@ -19,23 +19,20 @@ public class GroupByQuery implements QueryExecutor {
 	@Override
 	public DataCarrier executeQuery(QueryParameter queryParameter) throws Exception {
 		// TODO Auto-generated method stub
-		QueryTypeBasedOperation queryEvaluator = new QueryTypeBasedOperation();
+		QueryTypeBasedOperation queryTypeBasedOperation = new QueryTypeBasedOperation();
 		DataCarrier dataSet = new DataCarrier();
 		HeaderRowData headerRow = queryParameter.getHeaderRow();
-
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(queryParameter.getFilePath()));
 		RowDataHolder rowData;
 		bufferedReader.readLine();
 		String row;
+		Set<String> columnNames = headerRow.keySet();
 		while ((row = bufferedReader.readLine()) != null) {
 			int count = 0;
 			rowData = new RowDataHolder();
-
 			String rowValues[] = row.trim().split(",");
 			int columnCount = rowValues.length;
-
 			if (!queryParameter.isHasAllColumn()) {
-				Set<String> columnNames = headerRow.keySet();
 				for (String columnName : queryParameter.getColumNames().getColumns()) {
 					for (String actualColumnName : columnNames) {
 						if (actualColumnName.equals(columnName)) {
@@ -49,29 +46,9 @@ public class GroupByQuery implements QueryExecutor {
 					count++;
 				}
 			}
-
-			if (queryParameter.isHasWhere()) {
-				if (queryEvaluator.evaluateWhereCondition(queryParameter, rowValues)) {
-					dataSet.getResultSet().add(rowData);
-
-					if (queryParameter.isHasGroupBy()) {
-						String groupByColumnValue = rowData.get(headerRow.get(queryParameter.getGroupByColumn()));
-						List<RowDataHolder> dataValues = null;
-						if (dataSet.getGroupByDataSetNew().containsKey(groupByColumnValue)) {
-							dataValues = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
-							dataValues.add(rowData);
-						} else {
-							dataValues = new ArrayList<RowDataHolder>();
-							dataValues.add(rowData);
-						}
-						dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
-					}
-				}
-			} else {
-				dataSet.getResultSet().add(rowData);
-
-				if (queryParameter.isHasGroupBy()) {
-					String groupByColumnValue = rowData.get(headerRow.get(queryParameter.getGroupByColumn()));
+			String groupByColumnValue = rowData.get(headerRow.get(queryParameter.getGroupByColumn()));
+			if (queryParameter.isHasWhere()
+					&& queryTypeBasedOperation.checkingIfWhereConditionPasses(queryParameter, rowValues)&&queryParameter.isHasGroupBy()) {
 					List<RowDataHolder> dataValues = null;
 					if (dataSet.getGroupByDataSetNew().containsKey(groupByColumnValue)) {
 						dataValues = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
@@ -81,19 +58,26 @@ public class GroupByQuery implements QueryExecutor {
 						dataValues.add(rowData);
 					}
 					dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
+			} else {
+				dataSet.getResultSet().add(rowData);
+				List<RowDataHolder> dataValues = null;
+				if (queryParameter.isHasGroupBy() && dataSet.getGroupByDataSetNew().containsKey(groupByColumnValue)) {
+						dataValues = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
+						dataValues.add(rowData);
 				}
-			}
-
+					 else {
+						dataValues = new ArrayList<RowDataHolder>();
+						dataValues.add(rowData);
+					}
+					dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
+				}
 		}
-
 		if (queryParameter.isHasOrderBy()) {
 			DataSorter sortData = new DataSorter();
 			sortData.setSortingIndex(queryParameter.getHeaderRow().get(queryParameter.getOrderByColumn()));
 			Collections.sort(dataSet.getResultSet(), sortData);
 		}
-
 		bufferedReader.close();
 		return dataSet;
 	}
-
 }

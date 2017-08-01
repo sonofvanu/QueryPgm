@@ -13,49 +13,42 @@ public class SimpleQuery implements QueryExecutor {
 
 	@Override
 	public DataCarrier executeQuery(QueryParameter queryParameter) throws Exception {
-		QueryTypeBasedOperation queryEvaluator = new QueryTypeBasedOperation();
-		DataCarrier dataSet = new DataCarrier();
-		HeaderRowData headerRow = queryParameter.getHeaderRow();
+		QueryTypeBasedOperation queryTypeBasedOperation = new QueryTypeBasedOperation();
+		DataCarrier dataCarrier = new DataCarrier();
+		HeaderRowData headerRowData = queryParameter.getHeaderRow();
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(queryParameter.getFilePath()));
-		RowDataHolder rowData;
+		RowDataHolder rowDataHolder;
 		bufferedReader.readLine();
 		String row;
+		Set<String> columnNames = headerRowData.keySet();
 		while ((row = bufferedReader.readLine()) != null) {
-			int count = 0;
-			rowData = new RowDataHolder();
-
+			rowDataHolder = new RowDataHolder();
 			String rowValues[] = row.trim().split(",");
-			int columnCount = rowValues.length;
-
+			int columnCount = rowValues.length, counter = 0;
 			if (!queryParameter.isHasAllColumn()) {
-				Set<String> columnNames = headerRow.keySet();
 				for (String columnName : queryParameter.getColumNames().getColumns()) {
 					for (String actualColumnName : columnNames) {
 						if (actualColumnName.equals(columnName)) {
-							rowData.put(headerRow.get(columnName), rowValues[headerRow.get(columnName)].trim());
+							rowDataHolder.put(headerRowData.get(columnName),
+									rowValues[headerRowData.get(columnName)].trim());
 						}
 					}
 				}
 			} else {
-				while (count < columnCount) {
-					rowData.put(count, rowValues[count].trim());
-					count++;
+				while (counter < columnCount) {
+					rowDataHolder.put(counter, rowValues[counter].trim());
+					counter++;
 				}
 			}
+			if (queryParameter.isHasWhere()
+					&& queryTypeBasedOperation.checkingIfWhereConditionPasses(queryParameter, rowValues)) {
+		dataCarrier.getResultSet().add(rowDataHolder);
 
-			if (queryParameter.isHasWhere()) {
-				if (queryEvaluator.evaluateWhereCondition(queryParameter, rowValues)) {
-					dataSet.getResultSet().add(rowData);
-
-				}
 			} else {
-				dataSet.getResultSet().add(rowData);
-
+				dataCarrier.getResultSet().add(rowDataHolder);
 			}
-
 		}
 		bufferedReader.close();
-		return dataSet;
+		return dataCarrier;
 	}
-
 }

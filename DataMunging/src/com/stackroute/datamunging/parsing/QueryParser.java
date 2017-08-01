@@ -23,53 +23,53 @@ public class QueryParser {
 	}
 
 	public QueryParameter querySegregator(String queryString) {
-		String baseQuery = null, conditionQuery = null, selectcol = null;
+		String basePartofQuery = null, conditionalQueryPart = null, selectedColumnOfQuery = null;
 
 		if (queryString.contains("order by")) {
-			baseQuery = queryString.split("order by")[0].trim();
+			basePartofQuery = queryString.split("order by")[0].trim();
 			queryParameter.setOrderByColumn(queryString.split("order by")[1].trim().toLowerCase());
-			if (baseQuery.contains("where")) {
-				conditionQuery = baseQuery.split("where")[1].trim();
-				this.relationalQueryFieldProcessor(conditionQuery);
-				baseQuery = baseQuery.split("where")[0].trim();
+			if (basePartofQuery.contains("where")) {
+				conditionalQueryPart = basePartofQuery.split("where")[1].trim();
+				this.relationalQueryFieldProcessor(conditionalQueryPart);
+				basePartofQuery = basePartofQuery.split("where")[0].trim();
 				queryParameter.setHasWhere(true);
 			}
-			queryParameter.setFilePath(baseQuery.split("from")[1].trim());
-			baseQuery = baseQuery.split("from")[0].trim();
-			selectcol = baseQuery.split("select")[1].trim();
-			this.fieldSeparation(selectcol);
+			queryParameter.setFilePath(basePartofQuery.split("from")[1].trim());
+			basePartofQuery = basePartofQuery.split("from")[0].trim();
+			selectedColumnOfQuery = basePartofQuery.split("select")[1].trim();
+			this.fieldSeparation(selectedColumnOfQuery);
 			queryParameter.setHasOrderBy(true);
 
 		} else if (queryString.contains("group by")) {
-			baseQuery = queryString.split("group by")[0].trim();
+			basePartofQuery = queryString.split("group by")[0].trim();
 			queryParameter.setGroupByColumn(queryString.split("group by")[1].trim().toLowerCase());
-			if (baseQuery.contains("where")) {
-				conditionQuery = baseQuery.split("where")[1].trim();
-				this.relationalQueryFieldProcessor(conditionQuery);
-				baseQuery = baseQuery.split("where")[0].trim();
+			if (basePartofQuery.contains("where")) {
+				conditionalQueryPart = basePartofQuery.split("where")[1].trim();
+				this.relationalQueryFieldProcessor(conditionalQueryPart);
+				basePartofQuery = basePartofQuery.split("where")[0].trim();
 				queryParameter.setHasWhere(true);
 			}
-			queryParameter.setFilePath(baseQuery.split("from")[1].trim());
-			baseQuery = baseQuery.split("from")[0].trim();
-			selectcol = baseQuery.split("select")[1].trim();
-			this.fieldSeparation(selectcol);
+			queryParameter.setFilePath(basePartofQuery.split("from")[1].trim());
+			basePartofQuery = basePartofQuery.split("from")[0].trim();
+			selectedColumnOfQuery = basePartofQuery.split("select")[1].trim();
+			this.fieldSeparation(selectedColumnOfQuery);
 			queryParameter.setHasGroupBy(true);
 		} else if (queryString.contains("where")) {
-			baseQuery = queryString.split("where")[0];
-			conditionQuery = queryString.split("where")[1];
-			conditionQuery = conditionQuery.trim();
-			queryParameter.setFilePath(baseQuery.split("from")[1].trim());
-			baseQuery = baseQuery.split("from")[0].trim();
-			this.relationalQueryFieldProcessor(conditionQuery);
-			selectcol = baseQuery.split("select")[1].trim();
-			this.fieldSeparation(selectcol);
+			basePartofQuery = queryString.split("where")[0];
+			conditionalQueryPart = queryString.split("where")[1];
+			conditionalQueryPart = conditionalQueryPart.trim();
+			queryParameter.setFilePath(basePartofQuery.split("from")[1].trim());
+			basePartofQuery = basePartofQuery.split("from")[0].trim();
+			this.relationalQueryFieldProcessor(conditionalQueryPart);
+			selectedColumnOfQuery = basePartofQuery.split("select")[1].trim();
+			this.fieldSeparation(selectedColumnOfQuery);
 			queryParameter.setHasWhere(true);
 
 		} else {
-			baseQuery = queryString.split("from")[0].trim();
+			basePartofQuery = queryString.split("from")[0].trim();
 			queryParameter.setFilePath(queryString.split("from")[1].trim());
-			selectcol = baseQuery.split("select")[1].trim();
-			this.fieldSeparation(selectcol);
+			selectedColumnOfQuery = basePartofQuery.split("select")[1].trim();
+			this.fieldSeparation(selectedColumnOfQuery);
 			queryParameter.setHasSimpleQuery(true);
 
 		}

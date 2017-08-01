@@ -10,17 +10,45 @@ import com.stackroute.datamunging.parsing.QueryParameter;
 
 public class QueryTypeBasedOperation {
 
-QueryParameter queryParam;
+	QueryParameter queryParam;
+
+	public boolean checkingIfWhereConditionPasses(QueryParameter queryParam, String rowValues[]) {
+		List<WhereRestrictionalConditions> listRelationalExpression = queryParam.getRestrictions();
+		HeaderRowData headerRow = queryParam.getHeaderRow();
+		List<String> logicalOperators = queryParam.getLogicalOperator();
+
+		boolean expression = checkinOfEveryConditionSent(listRelationalExpression.get(0), rowValues, headerRow);
+
+		int logicalOperatorCount = logicalOperators.size();
+		int count = 0;
+
+		if (logicalOperatorCount > 0) {
+			while (count < logicalOperatorCount) {
+				if (logicalOperators.get(count).equals("and")) {
+					expression = expression && checkinOfEveryConditionSent(listRelationalExpression.get(count + 1),
+							rowValues, headerRow);
+				} else {
+					expression = expression || checkinOfEveryConditionSent(listRelationalExpression.get(count + 1),
+							rowValues, headerRow);
+				}
+
+				count++;
+			}
+		}
+
+		return expression;
+	}
 
 	@SuppressWarnings("unused")
-	public LinkedHashMap<String, Float> evaluateAggregateColumns(List<RowDataHolder> groupOfRowData,
+	public LinkedHashMap<String, Float> checkingIfAgrregateConditionPasses(List<RowDataHolder> groupOfRowData,
 			QueryParameter queryParameter) {
 		LinkedHashMap<String, Float> groupingRowValues = new LinkedHashMap<String, Float>();
-		this.queryParam=queryParameter;
+		this.queryParam = queryParameter;
 		int numberOfAggregateColumns = queryParameter.getColumNames().getColumns().size();
 		List<String> actualAggregateColumns = queryParameter.getColumNames().getColumns();
-		int valuecounter = 0, dataCounter = 0, columnCounter = 0,rowGroupSize=groupOfRowData.size();
-		float sumOfValues = 0, averageOfValues = 0, minimumOfValues = 0, maximumOfValues = 0, countingNumberOfValues = 0, countingNumberOfColumns = 0;
+		int valuecounter = 0, dataCounter = 0, columnCounter = 0, rowGroupSize = groupOfRowData.size();
+		float sumOfValues = 0, averageOfValues = 0, minimumOfValues = 0, maximumOfValues = 0,
+				countingNumberOfValues = 0, countingNumberOfColumns = 0;
 
 		while (valuecounter < rowGroupSize) {
 			columnCounter = 0;
@@ -34,7 +62,7 @@ QueryParameter queryParam;
 					actualRowValue = groupOfRowData.get(valuecounter)
 							.get(queryParameter.getHeaderRow().get(aggregateColumnName));
 
-					if (!evaluateDataType(actualRowValue)) {
+					if (!checkingForTheDataType(actualRowValue)) {
 						float rowValue = Float.parseFloat(actualRowValue);
 
 						if (valuecounter == 0) {
@@ -80,35 +108,7 @@ QueryParameter queryParam;
 		return groupingRowValues;
 	}
 
-	public boolean evaluateWhereCondition(QueryParameter queryParam, String rowValues[]) {
-		List<WhereRestrictionalConditions> listRelationalExpression = queryParam
-				.getRestrictions();
-		HeaderRowData headerRow = queryParam.getHeaderRow();
-		List<String> logicalOperators = queryParam.getLogicalOperator();
-
-		boolean expression = evaluateEachCondition(listRelationalExpression.get(0), rowValues, headerRow);
-
-		int logicalOperatorCount = logicalOperators.size();
-		int count = 0;
-
-		if (logicalOperatorCount > 0) {
-			while (count < logicalOperatorCount) {
-				if (logicalOperators.get(count).equals("and")) {
-					expression = expression
-							&& evaluateEachCondition(listRelationalExpression.get(count + 1), rowValues, headerRow);
-				} else {
-					expression = expression
-							|| evaluateEachCondition(listRelationalExpression.get(count + 1), rowValues, headerRow);
-				}
-
-				count++;
-			}
-		}
-
-		return expression;
-	}
-
-	private boolean evaluateEachCondition(WhereRestrictionalConditions condition, String rowValues[],
+	private boolean checkinOfEveryConditionSent(WhereRestrictionalConditions condition, String rowValues[],
 			HeaderRowData headerRow) {
 
 		boolean expression = false;
@@ -118,7 +118,7 @@ QueryParameter queryParam;
 		String conditionValue = condition.getValue();
 
 		String columnValue = rowValues[headerRow.get(conditionColumnName)].trim();
-		boolean isString = evaluateDataType(columnValue);
+		boolean isString = checkingForTheDataType(columnValue);
 
 		if (isString) {
 			if (conditionOperator.equals("=")) {
@@ -131,26 +131,26 @@ QueryParameter queryParam;
 				}
 			}
 		} else {
-			float conditionParseValue = Float.parseFloat(conditionValue);
-			float rowDataValue = Float.parseFloat(rowValues[headerRow.get(conditionColumnName)]);
+			float conditionValueParsed = Float.parseFloat(conditionValue);
+			float rowDataValueParsed = Float.parseFloat(rowValues[headerRow.get(conditionColumnName)]);
 			switch (conditionOperator) {
 			case ">=":
-				expression = rowDataValue >= conditionParseValue;
+				expression = rowDataValueParsed >= conditionValueParsed;
 				break;
 			case "<=":
-				expression = rowDataValue <= conditionParseValue;
+				expression = rowDataValueParsed <= conditionValueParsed;
 				break;
 			case ">":
-				expression = rowDataValue > conditionParseValue;
+				expression = rowDataValueParsed > conditionValueParsed;
 				break;
 			case "<":
-				expression = rowDataValue < conditionParseValue;
+				expression = rowDataValueParsed < conditionValueParsed;
 				break;
 			case "=":
-				expression = rowDataValue == conditionParseValue;
+				expression = rowDataValueParsed == conditionValueParsed;
 				break;
 			case "!=":
-				expression = rowDataValue != conditionParseValue;
+				expression = rowDataValueParsed != conditionValueParsed;
 				break;
 			}
 		}
@@ -158,7 +158,7 @@ QueryParameter queryParam;
 		return expression;
 	}
 
-	private boolean evaluateDataType(String value) {
+	private boolean checkingForTheDataType(String value) {
 		try {
 			@SuppressWarnings("unused")
 			Float f = Float.parseFloat(value);

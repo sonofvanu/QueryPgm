@@ -20,7 +20,7 @@ public class AggregateQuery implements QueryExecutor {
 	@Override
 	public DataCarrier executeQuery(QueryParameter queryParameter) throws Exception {
 		// TODO Auto-generated method stub
-		QueryTypeBasedOperation queryEvaluator = new QueryTypeBasedOperation();
+		QueryTypeBasedOperation queryTypeBasedOperation = new QueryTypeBasedOperation();
 		DataCarrier dataSet = new DataCarrier();
 		HeaderRowData headerRow = queryParameter.getHeaderRow();
 
@@ -28,15 +28,13 @@ public class AggregateQuery implements QueryExecutor {
 		RowDataHolder rowData;
 		bufferedReader.readLine();
 		String row;
+		Set<String> columnNames = headerRow.keySet();
 		while ((row = bufferedReader.readLine()) != null) {
 			int count = 0;
 			rowData = new RowDataHolder();
-
 			String rowValues[] = row.trim().split(",");
 			int columnCount = rowValues.length;
-
 			if (!queryParameter.isHasAllColumn()) {
-				Set<String> columnNames = headerRow.keySet();
 				for (String columnName : queryParameter.getColumNames().getColumns()) {
 					for (String actualColumnName : columnNames) {
 						if (actualColumnName.equals(columnName)) {
@@ -50,9 +48,8 @@ public class AggregateQuery implements QueryExecutor {
 					count++;
 				}
 			}
-
 			if (queryParameter.isHasWhere()) {
-				if (queryEvaluator.evaluateWhereCondition(queryParameter, rowValues)) {
+				if (queryTypeBasedOperation.checkingIfWhereConditionPasses(queryParameter, rowValues)) {
 					dataSet.getResultSet().add(rowData);
 
 					if (queryParameter.isHasGroupBy()) {
@@ -100,13 +97,14 @@ public class AggregateQuery implements QueryExecutor {
 				LinkedHashMap<String, Float> eachGroupAggregateRow;
 				for (String groupByColumnValue : groupByColumnValues) {
 					List<RowDataHolder> groupRows = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
-					eachGroupAggregateRow = queryEvaluator.evaluateAggregateColumns(groupRows, queryParameter);
+					eachGroupAggregateRow = queryTypeBasedOperation.checkingIfAgrregateConditionPasses(groupRows,
+							queryParameter);
 					dataSet.getTotalGroupedData().put(groupByColumnValue, eachGroupAggregateRow);
 				}
 
 			} else {
-				dataSet.setAggregateRow(
-						queryEvaluator.evaluateAggregateColumns(dataSet.getResultSet(), queryParameter));
+				dataSet.setAggregateRow(queryTypeBasedOperation
+						.checkingIfAgrregateConditionPasses(dataSet.getResultSet(), queryParameter));
 			}
 		}
 
