@@ -3,39 +3,40 @@ import java.util.*;
 
 public class DataCarrier
 {
+	//dataset for the resultant set of datas
 	private List<RowDataHolder> resultSet=new ArrayList<RowDataHolder>();
+	//dataset for the storage of aggregate functions
+	private HashMap<String,Float> aggregateRow=new HashMap<String,Float>();
+	//dataset for group by data
+	private HashMap<String,List<RowDataHolder>> groupByDataSetNew=new HashMap<String,List<RowDataHolder>>();
+	//dataset for group by with presence of aggregate functions
+	private HashMap<String,HashMap<String,Float>> totalGroupedData=new HashMap<String,HashMap<String,Float>>(); 
 	
-	private LinkedHashMap<String,Float> aggregateRow=new LinkedHashMap<String,Float>();
-	
-	private LinkedHashMap<String,List<RowDataHolder>> groupByDataSetNew=new LinkedHashMap<String,List<RowDataHolder>>();
-	
-	private LinkedHashMap<String,LinkedHashMap<String,Float>> totalGroupedData=new LinkedHashMap<String,LinkedHashMap<String,Float>>(); 
-	
-	public LinkedHashMap<String,LinkedHashMap<String, Float>> getTotalGroupedData() 
+	public HashMap<String,HashMap<String, Float>> getTotalGroupedData() 
 	{
 		return totalGroupedData;
 	}
 
-	public void setTotalGroupedData(LinkedHashMap<String,LinkedHashMap<String, Float>> totalGroupedData) 
+	public void setTotalGroupedData(HashMap<String,HashMap<String, Float>> totalGroupedData) 
 	{
 		this.totalGroupedData = totalGroupedData;
 	}
 
-	public LinkedHashMap<String, List<RowDataHolder>> getGroupByDataSetNew() 
+	public HashMap<String, List<RowDataHolder>> getGroupByDataSetNew() 
 	{
 		return groupByDataSetNew;
 	}
 
-	public void setGroupByDataSetNew(LinkedHashMap<String, List<RowDataHolder>> groupByDataSetNew) 
+	public void setGroupByDataSetNew(HashMap<String, List<RowDataHolder>> groupByDataSetNew) 
 	{
 		this.groupByDataSetNew = groupByDataSetNew;
 	}
 
-	public LinkedHashMap<String, Float> getAggregateRow() {
+	public HashMap<String, Float> getAggregateRow() {
 		return aggregateRow;
 	}
 
-	public void setAggregateRow(LinkedHashMap<String, Float> aggregateRow) {
+	public void setAggregateRow(HashMap<String, Float> aggregateRow) {
 		this.aggregateRow = aggregateRow;
 	}
 

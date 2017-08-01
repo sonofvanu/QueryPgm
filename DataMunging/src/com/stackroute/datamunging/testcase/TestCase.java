@@ -2,6 +2,7 @@ package com.stackroute.datamunging.testcase;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class TestCase {
 	public void simpleQuery() throws Exception {
 		DataCarrier dataSet = query.processorSelection("select * from E:/Emp.csv");
 		assertNotNull(dataSet);
-		display("simpleQuery-----1", dataSet);
+		display("simpleQuery-----------------------------------------1", dataSet);
 
 	}
 
@@ -35,7 +36,7 @@ public class TestCase {
 
 		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv");
 		assertNotNull(dataSet);
-		display("simpleQueryWithSpecifiedColumnFields-----2", dataSet);
+		display("simpleQueryWithSpecifiedColumnFields----------------2", dataSet);
 
 	}
 
@@ -44,7 +45,7 @@ public class TestCase {
 
 		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv where salary>30000");
 		assertNotNull(dataSet);
-		display("specifiedColumnQueryWithGreaterThanClause-----3", dataSet);
+		display("specifiedColumnQueryWithGreaterThanClause------------3", dataSet);
 
 	}
 
@@ -53,7 +54,7 @@ public class TestCase {
 
 		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary<35000");
 		assertNotNull(dataSet);
-		display("specifiedColumnQueryWithLessThanClause-----4", dataSet);
+		display("specifiedColumnQueryWithLessThanClause---------------4", dataSet);
 
 	}
 
@@ -62,7 +63,7 @@ public class TestCase {
 
 		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary<=35000");
 		assertNotNull(dataSet);
-		display("specifiedColumnQueryWithLessThanOrEqualClause-----5", dataSet);
+		display("specifiedColumnQueryWithLessThanOrEqualClause--------5", dataSet);
 
 	}
 
@@ -80,7 +81,7 @@ public class TestCase {
 
 		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv where Salary!=35000");
 		assertNotNull(dataSet);
-		display("specifiedColumnQueryWithNotEqualClause-----7", dataSet);
+		display("specifiedColumnQueryWithNotEqualClause-------------7", dataSet);
 
 	}
 
@@ -99,7 +100,7 @@ public class TestCase {
 
 		DataCarrier dataSet = query.processorSelection("select count(Name) from E:/Emp.csv");
 		assertNotNull(dataSet);
-		display("aggregateFunctionCountClause-----9", dataSet);
+		display("aggregateFunctionCountClause----------------------9", dataSet);
 
 	}
 
@@ -108,7 +109,7 @@ public class TestCase {
 
 		DataCarrier dataSet = query.processorSelection("select sum(Salary) from E:/Emp.csv");
 		assertNotNull(dataSet);
-		display("aggregateFunctionSumClause-----10", dataSet);
+		display("aggregateFunctionSumClause------------------------10", dataSet);
 
 	}
 
@@ -126,7 +127,7 @@ public class TestCase {
 
 		DataCarrier dataSet = query.processorSelection("select City,Name,Salary from E:/Emp.csv order by Salary");
 		assertNotNull(dataSet);
-		display("specifiedColumnsWithOrderByClause-----12", dataSet);
+		display("specifiedColumnsWithOrderByClause-----------------12", dataSet);
 
 	}
 
@@ -136,7 +137,7 @@ public class TestCase {
 		DataCarrier dataSet = query
 				.processorSelection("select City,Name,Salary from E:/Emp.csv where City=Bangalore order by Salary");
 		assertNotNull(dataSet);
-		display("specifiedColumnsWithWhereAndOrderByClause-----13", dataSet);
+		display("specifiedColumnsWithWhereAndOrderByClause----------13", dataSet);
 
 	}
 
@@ -157,6 +158,7 @@ public class TestCase {
 		displayGroupByRecords("specifiedColumnAndAggregateSumWithGroupByClause-----15", dataSet);
 
 	}
+	
 
 	public void display(String testCaseName, DataCarrier printerDataSet) {
 		System.out.println("===========================================" + "\n");
@@ -187,10 +189,10 @@ public class TestCase {
 	public void displayGroupByRecords(String testCaseName, DataCarrier printerDataSet) {
 		System.out.println("===========================================");
 		System.out.println(testCaseName);
-		LinkedHashMap<String, LinkedHashMap<String, Float>> groupRows = printerDataSet.getTotalGroupedData();
+		HashMap<String, HashMap<String, Float>> groupRows = printerDataSet.getTotalGroupedData();
 		Set<String> groupByColumnValues = groupRows.keySet();
 		for (String groupByColumnValue : groupByColumnValues) {
-			LinkedHashMap<String, Float> eachGroupRow = printerDataSet.getTotalGroupedData().get(groupByColumnValue);
+			HashMap<String, Float> eachGroupRow = printerDataSet.getTotalGroupedData().get(groupByColumnValue);
 			System.out.print(groupByColumnValue + "\t");
 			Set<String> aggregateColumnNames = eachGroupRow.keySet();
 			for (String eachAggregateColumnName : aggregateColumnNames) {

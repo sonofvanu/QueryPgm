@@ -3,9 +3,7 @@ package com.stackroute.datamunging.parsing;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-
-import com.stackroute.datamunging.model.HeaderRowData;
-import com.stackroute.datamunging.model.SpecifiedColumns;
+import java.util.HashMap;
 import com.stackroute.datamunging.model.WhereRestrictionalConditions;
 
 public class QueryParser {
@@ -15,11 +13,11 @@ public class QueryParser {
 	@SuppressWarnings("unused")
 	public QueryParser(String queryString) throws Exception {
 
-		queryParameter.setColumNames(new SpecifiedColumns());
+		queryParameter.setColumNames(queryParameter.columNames);
 		queryParameter.setListrelexpr(new ArrayList<WhereRestrictionalConditions>());
 		queryParameter.setLogicalOperator(new ArrayList<String>());
 		this.querySegregator(queryString);
-		HeaderRowData headerRow = this.setHeaderRow();
+		queryParameter.headerRow = this.setHeaderRow();
 	}
 
 	public QueryParameter querySegregator(String queryString) {
@@ -121,7 +119,7 @@ public class QueryParser {
 			String columnList[] = selectColumn.trim().split(",");
 
 			for (String column : columnList) {
-				queryParameter.columNames.getColumns().add(column.trim().toLowerCase());
+				queryParameter.columNames.add(column.trim().toLowerCase());
 			}
 
 			if (selectColumn.contains("sum(") || selectColumn.contains("count(") || selectColumn.contains("count(*)")) {
@@ -131,23 +129,23 @@ public class QueryParser {
 		}
 	}
 
-	public HeaderRowData setHeaderRow() throws Exception {
+	public HashMap<String,Integer> setHeaderRow() throws Exception {
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(queryParameter.getFilePath()));
-		HeaderRowData headerRow = new HeaderRowData();
+		//HeaderRowData headerRow = new HeaderRowData();
 
 		if (bufferedReader != null) {
 			String rowData = bufferedReader.readLine();
 			String rowValues[] = rowData.split(",");
 			int columnIndex = 0;
 			for (String rowvalue : rowValues) {
-				headerRow.put(rowvalue.toLowerCase(), columnIndex);
+				queryParameter.headerRow.put(rowvalue.toLowerCase(), columnIndex);
 				columnIndex++;
 			}
 		}
-		queryParameter.setHeaderRow(headerRow);
+		queryParameter.setHeaderRow(queryParameter.headerRow);
 
 		bufferedReader.close();
-		return headerRow;
+		return queryParameter.headerRow;
 	}
 
 }

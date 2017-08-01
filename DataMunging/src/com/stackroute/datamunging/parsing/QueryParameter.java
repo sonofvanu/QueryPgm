@@ -1,9 +1,11 @@
 package com.stackroute.datamunging.parsing;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import com.stackroute.datamunging.model.HeaderRowData;
-import com.stackroute.datamunging.model.SpecifiedColumns;
+
+
 import com.stackroute.datamunging.model.WhereRestrictionalConditions;
 
 public class QueryParameter {
@@ -57,19 +59,32 @@ public class QueryParameter {
 		this.hasAggregate = hasAggregate;
 	}
 
-	public void setHeaderRow(HeaderRowData headerRow) {
+	/*public void setHeaderRow(HeaderRowData headerRow) {
+		this.headerRow = headerRow;
+	}*/
+
+	List<String> columNames=new ArrayList<>();
+	 List<WhereRestrictionalConditions> restrictions;
+	 HashMap<String,Integer> headerRow=new HashMap<>();
+	public HashMap<String, Integer> getHeaderRow() {
+		return headerRow;
+	}
+
+	public void setHeaderRow(HashMap<String, Integer> headerRow) {
 		this.headerRow = headerRow;
 	}
 
-	SpecifiedColumns columNames;
-	 List<WhereRestrictionalConditions> restrictions;
-	private boolean hasGroupBy=false,hasOrderBy=false,hasWhere=false,hasAllColumn=false,hasColumn=false,hasSimpleQuery,hasAggregate=false;
- List<String> logicalOperator;
 	public void setLogicalOperator(List<String> logicalOperator) {
 		this.logicalOperator = logicalOperator;
 	}
 
-	private HeaderRowData headerRow;
+	private boolean hasGroupBy=false,hasOrderBy=false,hasWhere=false,hasAllColumn=false,hasColumn=false,hasSimpleQuery,hasAggregate=false;
+ List<String> logicalOperator;
+	/*public void setLogicalOperator(List<String> logicalOperator) {
+		this.logicalOperator = logicalOperator;
+	}*/
+
+	/*private HeaderRowData headerRow;*/
 	
 	
 	public String getFilePath() {
@@ -108,21 +123,29 @@ public class QueryParameter {
 		return hasAggregate;
 	}
 	
-	public HeaderRowData getHeaderRow() 
+	/*public HeaderRowData getHeaderRow() 
 	{
 		return headerRow;
-	}
+	}*/
 
 	public List<String> getLogicalOperator() {
 		return logicalOperator;
 	}
 
-	public SpecifiedColumns getColumNames() {
+	/*public SpecifiedColumns getColumNames() {
 		return columNames;
 	}
 
 	public void setColumNames(SpecifiedColumns columnNames) {
 		this.columNames = columnNames;
+	}*/
+
+	public List<String> getColumNames() {
+		return columNames;
+	}
+
+	public void setColumNames(List<String> columNames) {
+		this.columNames = columNames;
 	}
 
 	public List<WhereRestrictionalConditions> getListrelexpr() {
