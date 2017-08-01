@@ -9,10 +9,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
-import com.stackroute.datamunging.evaluator.DataSorter;
 import com.stackroute.datamunging.model.DataCarrier;
 import com.stackroute.datamunging.model.RowDataHolder;
 import com.stackroute.datamunging.model.WhereRestrictionalConditions;
+import com.stackroute.datamunging.parsing.DataSorter;
 import com.stackroute.datamunging.parsing.QueryParameter;
 
 public class AggregateQuery implements QueryExecutor {
@@ -20,7 +20,6 @@ public class AggregateQuery implements QueryExecutor {
 	@Override
 	public DataCarrier executeQuery(QueryParameter queryParameter) throws Exception {
 		// TODO Auto-generated method stub
-		/*QueryTypeBasedOperation queryTypeBasedOperation = new QueryTypeBasedOperation();*/
 		DataCarrier dataSet = new DataCarrier();
 		HashMap<String,Integer> headerRow = queryParameter.getHeaderRow();
 
@@ -111,8 +110,6 @@ public class AggregateQuery implements QueryExecutor {
 		bufferedReader.close();
 		return dataSet;
 	}
-	
-	
 	
 	public boolean checkingIfWhereConditionPasses(QueryParameter queryParam, String rowValues[]) {
 		List<WhereRestrictionalConditions> listRelationalExpression = queryParam.getRestrictions();

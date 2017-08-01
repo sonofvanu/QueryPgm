@@ -1,18 +1,13 @@
 package com.stackroute.datamunging.testcase;
 
 import static org.junit.Assert.assertNotNull;
-
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Set;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import com.stackroute.datamunging.model.DataCarrier;
 import com.stackroute.datamunging.model.RowDataHolder;
 import com.stackroute.datamunging.parsing.Query;
-
 
 public class TestCase {
 

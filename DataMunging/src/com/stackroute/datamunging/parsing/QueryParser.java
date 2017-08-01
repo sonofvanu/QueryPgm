@@ -22,7 +22,6 @@ public class QueryParser {
 
 	public QueryParameter querySegregator(String queryString) {
 		String basePartofQuery = null, conditionalQueryPart = null, selectedColumnOfQuery = null;
-
 		if (queryString.contains("order by")) {
 			basePartofQuery = queryString.split("order by")[0].trim();
 			queryParameter.setOrderByColumn(queryString.split("order by")[1].trim().toLowerCase());
@@ -37,7 +36,6 @@ public class QueryParser {
 			selectedColumnOfQuery = basePartofQuery.split("select")[1].trim();
 			this.fieldSeparation(selectedColumnOfQuery);
 			queryParameter.setHasOrderBy(true);
-
 		} else if (queryString.contains("group by")) {
 			basePartofQuery = queryString.split("group by")[0].trim();
 			queryParameter.setGroupByColumn(queryString.split("group by")[1].trim().toLowerCase());
@@ -62,24 +60,19 @@ public class QueryParser {
 			selectedColumnOfQuery = basePartofQuery.split("select")[1].trim();
 			this.fieldSeparation(selectedColumnOfQuery);
 			queryParameter.setHasWhere(true);
-
 		} else {
 			basePartofQuery = queryString.split("from")[0].trim();
 			queryParameter.setFilePath(queryString.split("from")[1].trim());
 			selectedColumnOfQuery = basePartofQuery.split("select")[1].trim();
 			this.fieldSeparation(selectedColumnOfQuery);
 			queryParameter.setHasSimpleQuery(true);
-
 		}
-
 		return queryParameter;
 	}
 
 	private void relationalQueryFieldProcessor(String conditionQuery) {
 		String oper[] = { ">=", "<=", ">", "<", "!=", "=" };
-
 		String relationalQueries[] = conditionQuery.split("\\s+and\\s+|\\s+or\\s+");
-
 		for (String relationQuery : relationalQueries) {
 			relationQuery = relationQuery.trim();
 			for (String operator : oper) {
@@ -93,7 +86,6 @@ public class QueryParser {
 				}
 			}
 		}
-
 		queryParameter.setRestrictions(queryParameter.restrictions);
 		if (queryParameter.restrictions.size() > 1)
 			this.logicalOperatorManager(conditionQuery);
@@ -101,7 +93,6 @@ public class QueryParser {
 
 	private void logicalOperatorManager(String conditionQuery) {
 		String conditionQueryData[] = conditionQuery.split(" ");
-
 		for (String queryData : conditionQueryData) {
 			queryData = queryData.trim();
 			if (queryData.equals("and") || queryData.equals("or")) {
@@ -112,16 +103,13 @@ public class QueryParser {
 	}
 
 	private void fieldSeparation(String selectColumn) {
-
 		if (selectColumn.trim().contains("*") && selectColumn.trim().length() == 1) {
 			queryParameter.setHasAllColumn(true);
 		} else {
 			String columnList[] = selectColumn.trim().split(",");
-
 			for (String column : columnList) {
 				queryParameter.columNames.add(column.trim().toLowerCase());
 			}
-
 			if (selectColumn.contains("sum(") || selectColumn.contains("count(") || selectColumn.contains("count(*)")) {
 				queryParameter.setHasAggregate(true);
 				queryParameter.setHasAllColumn(true);
@@ -131,8 +119,6 @@ public class QueryParser {
 
 	public HashMap<String,Integer> setHeaderRow() throws Exception {
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(queryParameter.getFilePath()));
-		//HeaderRowData headerRow = new HeaderRowData();
-
 		if (bufferedReader != null) {
 			String rowData = bufferedReader.readLine();
 			String rowValues[] = rowData.split(",");
@@ -143,7 +129,6 @@ public class QueryParser {
 			}
 		}
 		queryParameter.setHeaderRow(queryParameter.headerRow);
-
 		bufferedReader.close();
 		return queryParameter.headerRow;
 	}

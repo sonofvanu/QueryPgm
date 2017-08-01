@@ -12,11 +12,9 @@ import com.stackroute.datamunging.model.WhereRestrictionalConditions;
 import com.stackroute.datamunging.parsing.QueryParameter;
 
 public class SimpleQuery implements QueryExecutor {
-
 	@Override
 	public DataCarrier executeQuery(QueryParameter queryParameter) throws Exception {
 		// TODO Auto-generated method stub
-		/*QueryTypeBasedOperation queryTypeBasedOperation = new QueryTypeBasedOperation();*/
 		DataCarrier dataCarrier = new DataCarrier();
 		HashMap<String,Integer> headerRowData = queryParameter.getHeaderRow();
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(queryParameter.getFilePath()));
@@ -55,9 +53,6 @@ public class SimpleQuery implements QueryExecutor {
 		return dataCarrier;
 	}
 	
-	
-	
-	
 	public boolean checkingIfWhereConditionPasses(QueryParameter queryParam, String rowValues[]) {
 		List<WhereRestrictionalConditions> listRelationalExpression = queryParam.getRestrictions();
 		HashMap<String,Integer> headerRow = queryParam.getHeaderRow();
@@ -80,8 +75,6 @@ public class SimpleQuery implements QueryExecutor {
 		}
 		return expression;
 	}
-
-	
 
 	private boolean checkingOfEveryConditionSent(WhereRestrictionalConditions condition, String rowValues[],
 			HashMap<String,Integer> headerRow) {

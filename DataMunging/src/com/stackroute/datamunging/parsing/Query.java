@@ -7,7 +7,6 @@ import com.stackroute.datamunging.processor.QueryExecutor;
 import com.stackroute.datamunging.processor.SimpleQuery;
 
 public class Query {
-
 	public DataCarrier processorSelection(String queryString) throws Exception {
 		DataCarrier dataset = new DataCarrier();
 		QueryParser queryParser = new QueryParser(queryString);
