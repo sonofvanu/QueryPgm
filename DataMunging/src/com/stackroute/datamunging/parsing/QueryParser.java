@@ -10,24 +10,14 @@ public class QueryParser {
 
 	QueryParameter queryParameter = new QueryParameter();
 
-	@SuppressWarnings("unused")
-	public QueryParser(String queryString) throws Exception {
-
-		queryParameter.setColumNames(queryParameter.columNames);
-		queryParameter.setListrelexpr(new ArrayList<WhereRestrictionalConditions>());
-		queryParameter.setLogicalOperator(new ArrayList<String>());
-		this.querySegregator(queryString);
-		queryParameter.headerRow = this.setHeaderRow();
-	}
-
 	public QueryParameter querySegregator(String queryString) {
-		String basePartofQuery = null, conditionalQueryPart = null, selectedColumnOfQuery = null;
+		String basePartofQuery = null, conditionalPartOfQuery = null, selectedColumnOfQuery = null;
 		if (queryString.contains("order by")) {
 			basePartofQuery = queryString.split("order by")[0].trim();
 			queryParameter.setOrderByColumn(queryString.split("order by")[1].trim().toLowerCase());
 			if (basePartofQuery.contains("where")) {
-				conditionalQueryPart = basePartofQuery.split("where")[1].trim();
-				this.relationalQueryFieldProcessor(conditionalQueryPart);
+				conditionalPartOfQuery = basePartofQuery.split("where")[1].trim();
+				this.relationalQueryFieldProcessor(conditionalPartOfQuery);
 				basePartofQuery = basePartofQuery.split("where")[0].trim();
 				queryParameter.setHasWhere(true);
 			}
@@ -40,8 +30,8 @@ public class QueryParser {
 			basePartofQuery = queryString.split("group by")[0].trim();
 			queryParameter.setGroupByColumn(queryString.split("group by")[1].trim().toLowerCase());
 			if (basePartofQuery.contains("where")) {
-				conditionalQueryPart = basePartofQuery.split("where")[1].trim();
-				this.relationalQueryFieldProcessor(conditionalQueryPart);
+				conditionalPartOfQuery = basePartofQuery.split("where")[1].trim();
+				this.relationalQueryFieldProcessor(conditionalPartOfQuery);
 				basePartofQuery = basePartofQuery.split("where")[0].trim();
 				queryParameter.setHasWhere(true);
 			}
@@ -52,11 +42,11 @@ public class QueryParser {
 			queryParameter.setHasGroupBy(true);
 		} else if (queryString.contains("where")) {
 			basePartofQuery = queryString.split("where")[0];
-			conditionalQueryPart = queryString.split("where")[1];
-			conditionalQueryPart = conditionalQueryPart.trim();
+			conditionalPartOfQuery = queryString.split("where")[1];
+			conditionalPartOfQuery = conditionalPartOfQuery.trim();
 			queryParameter.setFilePath(basePartofQuery.split("from")[1].trim());
 			basePartofQuery = basePartofQuery.split("from")[0].trim();
-			this.relationalQueryFieldProcessor(conditionalQueryPart);
+			this.relationalQueryFieldProcessor(conditionalPartOfQuery);
 			selectedColumnOfQuery = basePartofQuery.split("select")[1].trim();
 			this.fieldSeparation(selectedColumnOfQuery);
 			queryParameter.setHasWhere(true);
@@ -67,12 +57,13 @@ public class QueryParser {
 			this.fieldSeparation(selectedColumnOfQuery);
 			queryParameter.setHasSimpleQuery(true);
 		}
+		
 		return queryParameter;
 	}
 
-	private void relationalQueryFieldProcessor(String conditionQuery) {
+	private void relationalQueryFieldProcessor(String conditionalPartOfQuery) {
 		String oper[] = { ">=", "<=", ">", "<", "!=", "=" };
-		String relationalQueries[] = conditionQuery.split("\\s+and\\s+|\\s+or\\s+");
+		String relationalQueries[] = conditionalPartOfQuery.split("\\s+and\\s+|\\s+or\\s+");
 		for (String relationQuery : relationalQueries) {
 			relationQuery = relationQuery.trim();
 			for (String operator : oper) {
@@ -88,7 +79,7 @@ public class QueryParser {
 		}
 		queryParameter.setRestrictions(queryParameter.restrictions);
 		if (queryParameter.restrictions.size() > 1)
-			this.logicalOperatorManager(conditionQuery);
+			this.logicalOperatorManager(conditionalPartOfQuery);
 	}
 
 	private void logicalOperatorManager(String conditionQuery) {
@@ -117,7 +108,7 @@ public class QueryParser {
 		}
 	}
 
-	public HashMap<String,Integer> setHeaderRow() throws Exception {
+	public HashMap<String, Integer> setHeaderRow() throws Exception {
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(queryParameter.getFilePath()));
 		if (bufferedReader != null) {
 			String rowData = bufferedReader.readLine();
@@ -132,5 +123,12 @@ public class QueryParser {
 		bufferedReader.close();
 		return queryParameter.headerRow;
 	}
-
+	
+	public QueryParser(String queryString) throws Exception {
+		queryParameter.setColumNames(queryParameter.columNames);
+		queryParameter.setListrelexpr(new ArrayList<WhereRestrictionalConditions>());
+		queryParameter.setLogicalOperator(new ArrayList<String>());
+		this.querySegregator(queryString);
+		queryParameter.headerRow = this.setHeaderRow();
+	}
 }

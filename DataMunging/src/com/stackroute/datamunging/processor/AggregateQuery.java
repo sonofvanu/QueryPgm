@@ -218,22 +218,22 @@ public class AggregateQuery implements QueryExecutor {
 			float rowDataValueParsed = Float.parseFloat(rowValues[headerRow.get(conditionColumnName)]);
 			switch (conditionOperator) {
 			case ">=":
-				expression = rowDataValueParsed >= conditionValueParsed;
+				expression = (rowDataValueParsed >= conditionValueParsed);
 				break;
 			case "<=":
-				expression = rowDataValueParsed <= conditionValueParsed;
+				expression = (rowDataValueParsed <= conditionValueParsed);
 				break;
 			case ">":
-				expression = rowDataValueParsed > conditionValueParsed;
+				expression = (rowDataValueParsed > conditionValueParsed);
 				break;
 			case "<":
-				expression = rowDataValueParsed < conditionValueParsed;
+				expression = (rowDataValueParsed < conditionValueParsed);
 				break;
 			case "=":
-				expression = rowDataValueParsed == conditionValueParsed;
+				expression = (rowDataValueParsed == conditionValueParsed);
 				break;
 			case "!=":
-				expression = rowDataValueParsed != conditionValueParsed;
+				expression = (rowDataValueParsed != conditionValueParsed);
 				break;
 			}
 		}
@@ -249,5 +249,4 @@ public class AggregateQuery implements QueryExecutor {
 			return true;
 		}
 	}
-
 }

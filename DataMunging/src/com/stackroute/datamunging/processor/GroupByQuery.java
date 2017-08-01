@@ -15,6 +15,7 @@ import com.stackroute.datamunging.parsing.DataSorter;
 import com.stackroute.datamunging.parsing.QueryParameter;
 
 public class GroupByQuery implements QueryExecutor {
+	@SuppressWarnings("null")
 	@Override
 	public DataCarrier executeQuery(QueryParameter queryParameter) throws Exception {
 		// TODO Auto-generated method stub

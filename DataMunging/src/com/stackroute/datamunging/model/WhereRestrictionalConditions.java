@@ -1,24 +1,22 @@
 package com.stackroute.datamunging.model;
 
-//change class name
 public class WhereRestrictionalConditions {
-	// change name to conditionColumn,conditionOperator,conditionValue
-	private String columnName, operatorSymbol, conditionalValue;
+	private String conditionalColumn, conditionalOperator, conditionalValue;
 
 	public String getColumn() {
-		return columnName;
+		return conditionalColumn;
 	}
 
 	public void setColumn(String column) {
-		this.columnName = column;
+		this.conditionalColumn = column;
 	}
 
 	public String getOperator() {
-		return operatorSymbol;
+		return conditionalOperator;
 	}
 
 	public void setOperator(String operator) {
-		this.operatorSymbol = operator;
+		this.conditionalOperator = operator;
 	}
 
 	public String getValue() {
@@ -27,10 +25,6 @@ public class WhereRestrictionalConditions {
 
 	public void setValue(String value) {
 		this.conditionalValue = value;
-	}
-
-	public String toString() {
-		return "Column:" + columnName + " Operator:" + operatorSymbol + " Value:" + conditionalValue;
 	}
 
 }
