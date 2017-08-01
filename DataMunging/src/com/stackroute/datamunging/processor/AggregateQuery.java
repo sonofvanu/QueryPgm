@@ -29,6 +29,9 @@ public class AggregateQuery implements QueryExecutor {
 		bufferedReader.readLine();
 		String row;
 		Set<String> columnNames = headerRow.keySet();
+		LinkedHashMap<String, List<RowDataHolder>> groupDataSet = dataSet.getGroupByDataSetNew();
+		LinkedHashMap<String, Float> eachGroupAggregateRow;
+		Set<String> groupByColumnValues = groupDataSet.keySet();
 		while ((row = bufferedReader.readLine()) != null) {
 			int count = 0;
 			rowData = new RowDataHolder();
@@ -89,12 +92,10 @@ public class AggregateQuery implements QueryExecutor {
 			sortData.setSortingIndex(queryParameter.getHeaderRow().get(queryParameter.getOrderByColumn()));
 			Collections.sort(dataSet.getResultSet(), sortData);
 		}
-
+		
 		if (queryParameter.isHasAggregate()) {
 			if (queryParameter.isHasGroupBy()) {
-				LinkedHashMap<String, List<RowDataHolder>> groupDataSet = dataSet.getGroupByDataSetNew();
-				Set<String> groupByColumnValues = groupDataSet.keySet();
-				LinkedHashMap<String, Float> eachGroupAggregateRow;
+				
 				for (String groupByColumnValue : groupByColumnValues) {
 					List<RowDataHolder> groupRows = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
 					eachGroupAggregateRow = queryTypeBasedOperation.checkingIfAgrregateConditionPasses(groupRows,

@@ -16,6 +16,7 @@ import com.stackroute.datamunging.parsing.QueryParameter;
 
 public class GroupByQuery implements QueryExecutor {
 
+	@SuppressWarnings("null")
 	@Override
 	public DataCarrier executeQuery(QueryParameter queryParameter) throws Exception {
 		// TODO Auto-generated method stub
@@ -47,30 +48,28 @@ public class GroupByQuery implements QueryExecutor {
 				}
 			}
 			String groupByColumnValue = rowData.get(headerRow.get(queryParameter.getGroupByColumn()));
+			List<RowDataHolder> dataValues = null;
 			if (queryParameter.isHasWhere()
 					&& queryTypeBasedOperation.checkingIfWhereConditionPasses(queryParameter, rowValues)&&queryParameter.isHasGroupBy()) {
-					List<RowDataHolder> dataValues = null;
+					
 					if (dataSet.getGroupByDataSetNew().containsKey(groupByColumnValue)) {
-						dataValues = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
 						dataValues.add(rowData);
 					} else {
 						dataValues = new ArrayList<RowDataHolder>();
 						dataValues.add(rowData);
 					}
-					dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
 			} else {
 				dataSet.getResultSet().add(rowData);
-				List<RowDataHolder> dataValues = null;
 				if (queryParameter.isHasGroupBy() && dataSet.getGroupByDataSetNew().containsKey(groupByColumnValue)) {
-						dataValues = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
 						dataValues.add(rowData);
 				}
 					 else {
 						dataValues = new ArrayList<RowDataHolder>();
 						dataValues.add(rowData);
 					}
-					dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
+					
 				}
+			dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
 		}
 		if (queryParameter.isHasOrderBy()) {
 			DataSorter sortData = new DataSorter();
