@@ -2,6 +2,7 @@ package com.stackroute.datamunging.parsing;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.stackroute.datamunging.model.WhereRestrictionalConditions;
@@ -9,7 +10,12 @@ import com.stackroute.datamunging.model.WhereRestrictionalConditions;
 public class QueryParameter {
 	private String filePath;
 	private String orderByColumn, groupByColumn;
-
+	private List<String> columNames = new ArrayList<>();
+	private List<WhereRestrictionalConditions> restrictions;
+	private LinkedHashMap<String, Integer> headerRow = new LinkedHashMap<>();
+	private boolean hasGroupBy = false, hasOrderBy = false, hasWhere = false, hasAllColumn = false, hasColumn = false,
+			hasSimpleQuery, hasAggregate = false;
+//remove replicated variables(all boolean) and also add the set for aggregate functions custom object for aggregates(name and function)
 	public List<WhereRestrictionalConditions> getRestrictions() {
 		return restrictions;
 	}
@@ -58,15 +64,13 @@ public class QueryParameter {
 		this.hasAggregate = hasAggregate;
 	}
 
-	List<String> columNames = new ArrayList<>();
-	List<WhereRestrictionalConditions> restrictions;
-	HashMap<String, Integer> headerRow = new HashMap<>();
 
-	public HashMap<String, Integer> getHeaderRow() {
+
+	public LinkedHashMap<String, Integer> getHeaderRow() {
 		return headerRow;
 	}
 
-	public void setHeaderRow(HashMap<String, Integer> headerRow) {
+	public void setHeaderRow(LinkedHashMap<String, Integer> headerRow) {
 		this.headerRow = headerRow;
 	}
 
@@ -74,8 +78,7 @@ public class QueryParameter {
 		this.logicalOperator = logicalOperator;
 	}
 
-	private boolean hasGroupBy = false, hasOrderBy = false, hasWhere = false, hasAllColumn = false, hasColumn = false,
-			hasSimpleQuery, hasAggregate = false;
+	
 	List<String> logicalOperator;
 
 	public String getFilePath() {

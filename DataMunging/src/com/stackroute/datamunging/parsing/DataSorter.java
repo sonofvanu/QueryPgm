@@ -1,7 +1,6 @@
 package com.stackroute.datamunging.parsing;
 
 import java.util.Comparator;
-
 import com.stackroute.datamunging.model.RowDataHolder;
 
 public class DataSorter implements Comparator<RowDataHolder> {
