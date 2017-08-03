@@ -127,21 +127,21 @@ public class TestCase {
 	}
 
 	@Test
-	public void specifiedColumnsWithWhereAndOrderByClause() throws Exception {
-
-		DataCarrier dataSet = query
-				.processorSelection("select City,Name,Salary from E:/Emp.csv where City=Bangalore order by Salary");
-		assertNotNull(dataSet);
-		display("select City,Name,Salary from E:/Emp.csv where City=Bangalore order by Salary", dataSet);
-
-	}
-
-	@Test
 	public void specifiedColumnAndAggregateCountAllWithGroupByClause() throws Exception {
 
 		DataCarrier dataSet = query.processorSelection("select City,count(*) from E:/Emp.csv group by City");
 		assertNotNull(dataSet);
 		displayGroupByRecords("select City,count(*) from E:/Emp.csv group by City", dataSet);
+
+	}
+	
+	@Test
+	public void selectColumnsWithWhereWithOrderByTestCase() throws Exception {
+
+		DataCarrier dataSet = query
+				.processorSelection("select City,Name,Salary from E:/Emp.csv where City=Bangalore order by Salary");
+		assertNotNull(dataSet);
+		display("select City,Name,Salary from E:/Emp.csv where City=Bangalore order by Salary", dataSet);
 
 	}
 
@@ -188,7 +188,7 @@ public class TestCase {
 			System.out.print(groupByColumnValue + "\t");
 			Set<String> aggregateColumnNames = eachGroupRow.keySet();
 			for (String eachAggregateColumnName : aggregateColumnNames) {
-				System.out.print(eachGroupRow.get(eachAggregateColumnName) + "\t");
+				System.out.print(eachGroupRow.get(eachAggregateColumnName)  + "\t");
 			}
 			System.out.println();
 		}

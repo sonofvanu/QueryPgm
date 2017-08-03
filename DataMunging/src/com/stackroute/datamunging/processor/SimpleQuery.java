@@ -21,6 +21,7 @@ public class SimpleQuery implements QueryExecutor {
 			int count = 0;
 			rowData = new RowDataHolder();
 			String rowValues[] = row.trim().split(",");
+			//-----//
 			int columnCount = rowValues.length;
 			if (!queryParameter.isHasAllColumn()) {
 				for (String columnName : queryParameter.getColumNames()) {

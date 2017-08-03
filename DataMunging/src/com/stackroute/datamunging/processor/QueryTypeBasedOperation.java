@@ -146,5 +146,4 @@ public class QueryTypeBasedOperation {
 		return groupingRowValues;
 	}
 
-
 }

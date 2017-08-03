@@ -8,9 +8,10 @@ import com.stackroute.datamunging.processor.SimpleQuery;
 public class Query {
 	public DataCarrier processorSelection(String queryString) throws Exception {
 		DataCarrier dataset = new DataCarrier();
-		QueryParser queryParser = new QueryParser(queryString);
+		QueryParser queryParser = new QueryParser();
 		QueryParameter queryParameter = queryParser.querySegregator(queryString);
 		QueryExecutor queryExecutor;
+		
 		if (queryParameter.isHasAggregate()) {
 			queryExecutor = new AggregateQuery();
 			dataset = queryExecutor.executeQuery(queryParameter);
@@ -23,8 +24,6 @@ public class Query {
 		}
 		return dataset;
 	}
+	
+	
 }
-
-
-
-///give same name for instances(query executor instance)

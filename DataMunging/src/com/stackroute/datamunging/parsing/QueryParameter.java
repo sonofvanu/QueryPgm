@@ -11,11 +11,12 @@ public class QueryParameter {
 	private String filePath;
 	private String orderByColumn, groupByColumn;
 	private List<String> columNames = new ArrayList<>();
-	private List<WhereRestrictionalConditions> restrictions;
+	private List<WhereRestrictionalConditions> restrictions = new ArrayList<>();
 	private LinkedHashMap<String, Integer> headerRow = new LinkedHashMap<>();
+	private List<String> logicalOperator = new ArrayList<>();
 	private boolean hasGroupBy = false, hasOrderBy = false, hasWhere = false, hasAllColumn = false, hasColumn = false,
 			hasSimpleQuery, hasAggregate = false;
-//remove replicated variables(all boolean) and also add the set for aggregate functions custom object for aggregates(name and function)
+
 	public List<WhereRestrictionalConditions> getRestrictions() {
 		return restrictions;
 	}
@@ -64,8 +65,6 @@ public class QueryParameter {
 		this.hasAggregate = hasAggregate;
 	}
 
-
-
 	public LinkedHashMap<String, Integer> getHeaderRow() {
 		return headerRow;
 	}
@@ -77,9 +76,6 @@ public class QueryParameter {
 	public void setLogicalOperator(List<String> logicalOperator) {
 		this.logicalOperator = logicalOperator;
 	}
-
-	
-	List<String> logicalOperator;
 
 	public String getFilePath() {
 		return filePath;
