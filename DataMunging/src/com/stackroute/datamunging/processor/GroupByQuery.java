@@ -36,6 +36,18 @@ public class GroupByQuery implements QueryExecutor {
 						}
 					}
 				dataSet.getResultSet().add(rowData);
+				
+					String groupByColumnValue = rowData.get(headerRow.get(queryParameter.getGroupByColumn()));
+					List<RowDataHolder> dataValues = null;
+					if (dataSet.getGroupByDataSetNew().containsKey(groupByColumnValue)) {
+						dataValues = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
+						dataValues.add(rowData);
+					} else {
+						dataValues = new ArrayList<RowDataHolder>();
+						dataValues.add(rowData);
+					}
+					dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
+				
 				}
 				row=bufferedReader.readLine();
 			}
@@ -58,6 +70,18 @@ public class GroupByQuery implements QueryExecutor {
 							count++;
 						}
 						dataSet.getResultSet().add(rowData);
+						
+							String groupByColumnValue = rowData.get(headerRow.get(queryParameter.getGroupByColumn()));
+							List<RowDataHolder> dataValues = null;
+							if (dataSet.getGroupByDataSetNew().containsKey(groupByColumnValue)) {
+								dataValues = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
+								dataValues.add(rowData);
+							} else {
+								dataValues = new ArrayList<RowDataHolder>();
+								dataValues.add(rowData);
+							}
+							dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
+						
 					}
 					
 					row=bufferedReader.readLine();
@@ -84,7 +108,7 @@ public class GroupByQuery implements QueryExecutor {
 					}
 				}
 				dataSet.getResultSet().add(rowData);
-				if (queryParameter.isHasGroupBy()) {
+				
 					String groupByColumnValue = rowData.get(headerRow.get(queryParameter.getGroupByColumn()));
 					List<RowDataHolder> dataValues = null;
 					if (dataSet.getGroupByDataSetNew().containsKey(groupByColumnValue)) {
@@ -95,7 +119,7 @@ public class GroupByQuery implements QueryExecutor {
 						dataValues.add(rowData);
 					}
 					dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
-				}
+				
 				row=bufferedReader.readLine();
 				}
 			} 
@@ -115,7 +139,7 @@ public class GroupByQuery implements QueryExecutor {
 					count++;
 				}
 				dataSet.getResultSet().add(rowData);
-				if (queryParameter.isHasGroupBy()) {
+				
 					String groupByColumnValue = rowData.get(headerRow.get(queryParameter.getGroupByColumn()));
 					List<RowDataHolder> dataValues = null;
 					if (dataSet.getGroupByDataSetNew().containsKey(groupByColumnValue)) {
@@ -126,7 +150,7 @@ public class GroupByQuery implements QueryExecutor {
 						dataValues.add(rowData);
 					}
 					dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
-				}
+				
 				row=bufferedReader.readLine();
 				}
 			}

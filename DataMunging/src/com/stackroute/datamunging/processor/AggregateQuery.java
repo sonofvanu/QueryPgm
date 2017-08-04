@@ -19,6 +19,7 @@ public class AggregateQuery implements QueryExecutor {
 		bufferedReader.readLine();
 
 		if (queryParameter.isHasWhere()) {
+
 			if (!queryParameter.isHasAllColumn()) {
 				bufferedReader.readLine();
 				String row = bufferedReader.readLine();
@@ -35,6 +36,18 @@ public class AggregateQuery implements QueryExecutor {
 							}
 						}
 						dataSet.getResultSet().add(rowData);
+						if (queryParameter.isHasGroupBy()) {
+							String groupByColumnValue = rowData.get(headerRow.get(queryParameter.getGroupByColumn()));
+							List<RowDataHolder> dataValues = null;
+							if (dataSet.getGroupByDataSetNew().containsKey(groupByColumnValue)) {
+								dataValues = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
+								dataValues.add(rowData);
+							} else {
+								dataValues = new ArrayList<RowDataHolder>();
+								dataValues.add(rowData);
+							}
+							dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
+						}
 					}
 					row = bufferedReader.readLine();
 				}
@@ -55,6 +68,18 @@ public class AggregateQuery implements QueryExecutor {
 							count++;
 						}
 						dataSet.getResultSet().add(rowData);
+						if (queryParameter.isHasGroupBy()) {
+							String groupByColumnValue = rowData.get(headerRow.get(queryParameter.getGroupByColumn()));
+							List<RowDataHolder> dataValues = null;
+							if (dataSet.getGroupByDataSetNew().containsKey(groupByColumnValue)) {
+								dataValues = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
+								dataValues.add(rowData);
+							} else {
+								dataValues = new ArrayList<RowDataHolder>();
+								dataValues.add(rowData);
+							}
+							dataSet.getGroupByDataSetNew().put(groupByColumnValue, dataValues);
+						}
 					}
 
 					row = bufferedReader.readLine();
