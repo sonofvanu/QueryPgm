@@ -1,17 +1,15 @@
 package com.stackroute.datamunging.parsing;
+
 import com.stackroute.datamunging.model.DataCarrier;
-import com.stackroute.datamunging.processor.AggregateQuery;
-import com.stackroute.datamunging.processor.GroupByQuery;
-import com.stackroute.datamunging.processor.QueryExecutor;
-import com.stackroute.datamunging.processor.SimpleQuery;
+import com.stackroute.datamunging.processor.*;
 
 public class Query {
 	public DataCarrier processorSelection(String queryString) throws Exception {
 		DataCarrier dataset = new DataCarrier();
 		QueryParser queryParser = new QueryParser();
 		QueryParameter queryParameter = queryParser.querySegregator(queryString);
-		QueryExecutor queryExecutor;
 		
+		QueryExecutor queryExecutor;
 		if (queryParameter.isHasAggregate()) {
 			queryExecutor = new AggregateQuery();
 			dataset = queryExecutor.executeQuery(queryParameter);
@@ -24,6 +22,4 @@ public class Query {
 		}
 		return dataset;
 	}
-	
-	
 }

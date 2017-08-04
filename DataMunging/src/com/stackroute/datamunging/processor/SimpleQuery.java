@@ -14,16 +14,58 @@ public class SimpleQuery implements QueryExecutor {
 		LinkedHashMap<String, Integer> headerRow = queryParameter.getHeaderRow();
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(queryParameter.getFilePath()));
 		RowDataHolder rowData;
-		bufferedReader.readLine();
-		String row;
 		Set<String> columnNames = headerRow.keySet();
-		while ((row = bufferedReader.readLine()) != null) {
-			int count = 0;
-			rowData = new RowDataHolder();
-			String rowValues[] = row.trim().split(",");
-			//-----//
-			int columnCount = rowValues.length;
+		if (queryParameter.isHasWhere()) {
 			if (!queryParameter.isHasAllColumn()) {
+				bufferedReader.readLine();
+				String row = bufferedReader.readLine();
+				while (row != null) {
+					rowData = new RowDataHolder();
+					String rowValues[] = row.trim().split(",");
+					int rowCount = rowValues.length;
+					if (queryTypeBasedOperation.checkingIfWhereConditionPasses(queryParameter, rowValues)) {
+						for (String columnName : queryParameter.getColumNames()) {
+							for (String actualColumnName : columnNames) {
+								if (actualColumnName.equals(columnName)) {
+									rowData.put(headerRow.get(columnName), rowValues[headerRow.get(columnName)].trim());
+								}
+							}
+						}
+						dataSet.getResultSet().add(rowData);
+					}
+					row = bufferedReader.readLine();
+				}
+
+			}
+
+			else {
+				bufferedReader.readLine();
+				String row = bufferedReader.readLine();
+				while (row != null) {
+					int count = 0;
+					rowData = new RowDataHolder();
+					String rowValues[] = row.trim().split(",");
+					int rowCount = rowValues.length;
+					if (queryTypeBasedOperation.checkingIfWhereConditionPasses(queryParameter, rowValues)) {
+						while (count < rowCount) {
+							rowData.put(count, rowValues[count].trim());
+							count++;
+						}
+						dataSet.getResultSet().add(rowData);
+					}
+
+					row = bufferedReader.readLine();
+				}
+
+			}
+		}
+
+		if (!queryParameter.isHasAllColumn()) {
+			bufferedReader.readLine();
+			String row = bufferedReader.readLine();
+			while (row != null) {
+				rowData = new RowDataHolder();
+				String rowValues[] = row.trim().split(",");
 				for (String columnName : queryParameter.getColumNames()) {
 					for (String actualColumnName : columnNames) {
 						if (actualColumnName.equals(columnName)) {
@@ -31,20 +73,30 @@ public class SimpleQuery implements QueryExecutor {
 						}
 					}
 				}
-			} else {
-				while (count < columnCount) {
+				dataSet.getResultSet().add(rowData);
+				row = bufferedReader.readLine();
+			}
+
+		}
+
+		if (queryParameter.isHasAllColumn()) {
+			bufferedReader.readLine();
+			String row = bufferedReader.readLine();
+			while (row != null) {
+				int count = 0;
+				rowData = new RowDataHolder();
+				String rowValues[] = row.trim().split(",");
+				int rowCount = rowValues.length;
+				while (count < rowCount) {
 					rowData.put(count, rowValues[count].trim());
 					count++;
 				}
-			}
-			if (queryParameter.isHasWhere()) {
-				if (queryTypeBasedOperation.checkingIfWhereConditionPasses(queryParameter, rowValues)) {
-					dataSet.getResultSet().add(rowData);
-				}
-			} else {
 				dataSet.getResultSet().add(rowData);
+				row = bufferedReader.readLine();
 			}
+
 		}
+
 		return dataSet;
 	}
 }

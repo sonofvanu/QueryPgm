@@ -19,12 +19,24 @@ public class TestCase {
 		query = new Query();
 	}
 
+
 	@Test
 	public void simpleQuery() throws Exception {
 		DataCarrier dataSet = query.processorSelection("select * from E:/Emp.csv");
 		assertNotNull(dataSet);
 		display("select * from E:/Emp.csv", dataSet);
 	}
+	
+
+	@Test
+	public void allColumnsWithWhereClause() throws Exception {
+
+		DataCarrier dataSet = query.processorSelection("select * from E:/Emp.csv where City=Bangalore");
+		assertNotNull(dataSet);
+		display("select * from E:/Emp.csv where City=Bangalore", dataSet);
+
+	}
+
 
 	@Test
 	public void simpleQueryWithSpecifiedColumnFields() throws Exception {
@@ -34,6 +46,7 @@ public class TestCase {
 		display("select City,Name,Salary from E:/Emp.csv", dataSet);
 
 	}
+
 
 	@Test
 	public void specifiedColumnQueryWithGreaterThanClause() throws Exception {
@@ -61,6 +74,7 @@ public class TestCase {
 		display("select City,Name,Salary from E:/Emp.csv where Salary<=35000", dataSet);
 
 	}
+
 
 	@Test
 	public void specifiedColumnQueryWithGreaterThanOrEqualClause() throws Exception {
