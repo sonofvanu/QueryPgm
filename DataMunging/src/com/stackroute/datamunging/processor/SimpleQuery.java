@@ -22,7 +22,7 @@ public class SimpleQuery implements QueryExecutor {
 				while (row != null) {
 					rowData = new RowDataHolder();
 					String rowValues[] = row.trim().split(",");
-					int rowCount = rowValues.length;
+
 					if (queryTypeBasedOperation.checkingIfWhereConditionPasses(queryParameter, rowValues)) {
 						for (String columnName : queryParameter.getColumNames()) {
 							for (String actualColumnName : columnNames) {

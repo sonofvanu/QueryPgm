@@ -16,17 +16,13 @@ public class AggregateQuery implements QueryExecutor {
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(queryParameter.getFilePath()));
 		RowDataHolder rowData;
 		Set<String> columnNames = headerRow.keySet();
-		bufferedReader.readLine();
-
 		if (queryParameter.isHasWhere()) {
-
 			if (!queryParameter.isHasAllColumn()) {
 				bufferedReader.readLine();
 				String row = bufferedReader.readLine();
 				while (row != null) {
 					rowData = new RowDataHolder();
 					String rowValues[] = row.trim().split(",");
-					int rowCount = rowValues.length;
 					if (queryTypeBasedOperation.checkingIfWhereConditionPasses(queryParameter, rowValues)) {
 						for (String columnName : queryParameter.getColumNames()) {
 							for (String actualColumnName : columnNames) {
@@ -92,11 +88,9 @@ public class AggregateQuery implements QueryExecutor {
 			bufferedReader.readLine();
 			String row = bufferedReader.readLine();
 			while (row != null) {
-				int count = 0;
 				rowData = new RowDataHolder();
-
 				String rowValues[] = row.trim().split(",");
-				int columnCount = rowValues.length;
+
 				for (String columnName : queryParameter.getColumNames()) {
 					for (String actualColumnName : columnNames) {
 						if (actualColumnName.equals(columnName)) {
@@ -159,23 +153,22 @@ public class AggregateQuery implements QueryExecutor {
 			Collections.sort(dataSet.getResultSet(), sortData);
 		}
 
-		if (queryParameter.isHasAggregate()) {
-			if (queryParameter.isHasGroupBy()) {
-				LinkedHashMap<String, List<RowDataHolder>> groupDataSet = dataSet.getGroupByDataSetNew();
-				Set<String> groupByColumnValues = groupDataSet.keySet();
-				LinkedHashMap<String, Float> eachGroupAggregateRow;
-				for (String groupByColumnValue : groupByColumnValues) {
-					List<RowDataHolder> groupRows = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
-					eachGroupAggregateRow = queryTypeBasedOperation.checkingIfAgrregateConditionPasses(groupRows,
-							queryParameter);
-					dataSet.getTotalGroupedData().put(groupByColumnValue, eachGroupAggregateRow);
-				}
-
-			} else {
-				dataSet.setAggregateRow(queryTypeBasedOperation
-						.checkingIfAgrregateConditionPasses(dataSet.getResultSet(), queryParameter));
+		if (queryParameter.isHasGroupBy()) {
+			LinkedHashMap<String, List<RowDataHolder>> groupDataSet = dataSet.getGroupByDataSetNew();
+			Set<String> groupByColumnValues = groupDataSet.keySet();
+			LinkedHashMap<String, Float> eachGroupAggregateRow;
+			for (String groupByColumnValue : groupByColumnValues) {
+				List<RowDataHolder> groupRows = dataSet.getGroupByDataSetNew().get(groupByColumnValue);
+				eachGroupAggregateRow = queryTypeBasedOperation.checkingIfAgrregateConditionPasses(groupRows,
+						queryParameter);
+				dataSet.getTotalGroupedData().put(groupByColumnValue, eachGroupAggregateRow);
 			}
+
+		} else {
+			dataSet.setAggregateRow(
+					queryTypeBasedOperation.checkingIfAgrregateConditionPasses(dataSet.getResultSet(), queryParameter));
 		}
+		
 
 		return dataSet;
 	}

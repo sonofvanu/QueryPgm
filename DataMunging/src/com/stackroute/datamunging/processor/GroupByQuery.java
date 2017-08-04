@@ -16,7 +16,6 @@ public class GroupByQuery implements QueryExecutor {
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(queryParameter.getFilePath()));
 		RowDataHolder rowData;
 		Set<String> columnNames = headerRow.keySet();
-		bufferedReader.readLine();
 		if (queryParameter.isHasWhere()) {
 			if(!queryParameter.isHasAllColumn())
 			{
@@ -25,7 +24,6 @@ public class GroupByQuery implements QueryExecutor {
 			while (row!=null) {
 				rowData = new RowDataHolder();
 				String rowValues[] = row.trim().split(",");
-				int rowCount=rowValues.length;
 				if (queryTypeBasedOperation.checkingIfWhereConditionPasses(queryParameter, rowValues))
 				{
 					for (String columnName : queryParameter.getColumNames()) {
@@ -95,11 +93,8 @@ public class GroupByQuery implements QueryExecutor {
 				bufferedReader.readLine();
 				String row=bufferedReader.readLine();
 				while (row != null) {
-					int count = 0;
 					rowData = new RowDataHolder();
-
 					String rowValues[] = row.trim().split(",");
-					int columnCount = rowValues.length;
 				for (String columnName : queryParameter.getColumNames()) {
 					for (String actualColumnName : columnNames) {
 						if (actualColumnName.equals(columnName)) {

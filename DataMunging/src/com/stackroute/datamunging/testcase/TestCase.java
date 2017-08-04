@@ -19,14 +19,12 @@ public class TestCase {
 		query = new Query();
 	}
 
-
 	@Test
 	public void simpleQuery() throws Exception {
 		DataCarrier dataSet = query.processorSelection("select * from E:/Emp.csv");
 		assertNotNull(dataSet);
 		display("select * from E:/Emp.csv", dataSet);
 	}
-	
 
 	@Test
 	public void allColumnsWithWhereClause() throws Exception {
@@ -37,7 +35,6 @@ public class TestCase {
 
 	}
 
-
 	@Test
 	public void simpleQueryWithSpecifiedColumnFields() throws Exception {
 
@@ -46,7 +43,6 @@ public class TestCase {
 		display("select City,Name,Salary from E:/Emp.csv", dataSet);
 
 	}
-
 
 	@Test
 	public void specifiedColumnQueryWithGreaterThanClause() throws Exception {
@@ -74,7 +70,6 @@ public class TestCase {
 		display("select City,Name,Salary from E:/Emp.csv where Salary<=35000", dataSet);
 
 	}
-
 
 	@Test
 	public void specifiedColumnQueryWithGreaterThanOrEqualClause() throws Exception {
@@ -148,7 +143,7 @@ public class TestCase {
 		displayGroupByRecords("select City,count(*) from E:/Emp.csv group by City", dataSet);
 
 	}
-	
+
 	@Test
 	public void selectColumnsWithWhereWithOrderByTestCase() throws Exception {
 
@@ -165,6 +160,15 @@ public class TestCase {
 		DataCarrier dataSet = query.processorSelection("select City,sum(Salary) from E:/Emp.csv group by City");
 		assertNotNull(dataSet);
 		displayGroupByRecords("select City,sum(Salary) from E:/Emp.csv group by City", dataSet);
+	}
+
+	@Test
+	public void specifiedColumnAndMultipleAggregateWithGroupByClause() throws Exception {
+
+		DataCarrier dataSet = query
+				.processorSelection("select City,sum(Salary),min(Salary),max(Salary) from E:/Emp.csv group by City");
+		assertNotNull(dataSet);
+		displayGroupByRecords("select City,sum(Salary),min(Salary),max(Salary) from E:/Emp.csv group by City", dataSet);
 	}
 
 	public void display(String testCaseName, DataCarrier printerDataSet) {
@@ -202,7 +206,7 @@ public class TestCase {
 			System.out.print(groupByColumnValue + "\t");
 			Set<String> aggregateColumnNames = eachGroupRow.keySet();
 			for (String eachAggregateColumnName : aggregateColumnNames) {
-				System.out.print(eachGroupRow.get(eachAggregateColumnName)  + "\t");
+				System.out.print(eachGroupRow.get(eachAggregateColumnName) + "\t");
 			}
 			System.out.println();
 		}
